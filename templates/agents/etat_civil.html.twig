@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}État civil{% endblock %}
+
+{% block body %}
+
+    <div class="container-fluid mt-4">
+
+        <h2>📋 État civil des agents</h2>
+
+        <div class="card mt-3">
+            <div class="card-body">
+
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Prénom</th>
+                        <th>Sexe</th>
+                        <th>CIN</th>
+                        <th>Contact</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for agent in agents %}
+                        <tr>
+                            <td>{{ agent.prenom }}</td>
+                            <td>{{ agent.sexe }}</td>
+                            <td>{{ agent.cin }}</td>
+                            <td>{{ agent.contact }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+
+                </table>
+
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}

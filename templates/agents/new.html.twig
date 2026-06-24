@@ -1,0 +1,217 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajout d'un nouvel agent{% endblock %}
+
+{% block body %}
+    <div class="container-fluid mt-4">
+        {# HEADER #}
+
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-primary text-white py-3">
+                <strong>Informations de l’agent</strong>
+            </div>
+
+            <div class="card-body p-4">
+                {{ form_start(form) }}
+
+                <div class="row g-4">
+
+                    <!-- IDENTITÉ -->
+                    <!-- IDENTITE -->
+                    <div class="col-12">
+                        <h5 class="text-primary border-bottom pb-2 mb-3">
+                            Identité
+                        </h5>
+                    </div>
+
+                    <div class="col-md-9">
+
+                        <div class="row">
+
+                            <div class="col-md-6">
+                                {{ form_row(form.nom) }}
+                            </div>
+
+                            <div class="col-md-6">
+                                {{ form_row(form.prenom) }}
+                            </div>
+
+                            <div class="col-md-6">
+                                {{ form_row(form.sexe) }}
+                            </div>
+
+                            <div class="col-md-6">
+                                {{ form_row(form.dateNaissance) }}
+                            </div>
+
+                            <div class="col-md-6">
+                                {{ form_row(form.lieuNaissance) }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form_row(form.adresse) }}
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-3 text-center">
+                        <label for="{{ form.nomPhotos.vars.id }}" style="cursor:pointer; position:relative;">
+                            <img id="previewPhoto" src="{{ asset('images/user.png') }}" class="rounded-circle border shadow" width="170" height="170" style="object-fit:cover">
+
+                            <!-- Icône appareil photo -->
+                            <div class="bg-primary text-white rounded-circle shadow" style="position:absolute; bottom:15px; right:20px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:20px;">
+                                <i class="bi bi-camera-fill"></i>
+                            </div>
+
+                            <div class="mt-2 text-muted">
+                                Ajouter une photo
+                            </div>
+
+                        </label>
+
+                        {{ form_widget(form.nomPhotos) }}
+
+                    </div>
+
+                    <!-- PARENTS -->
+                    <div class="col-12 mt-4">
+
+                        <h5 class="text-primary border-bottom pb-2 mb-3">
+                            <a class="text-decoration-none text-primary"
+                               data-bs-toggle="collapse"
+                               href="#parentsSection"
+                               role="button"
+                               aria-expanded="false">
+                                👨‍👩‍👧 Parents ▼
+                            </a>
+                        </h5>
+
+                        <div class="collapse" id="parentsSection">
+
+                            <div class="row">
+
+                                <div class="col-md-6">
+                                    {{ form_row(form.pere, {'label': 'Nom du père'}) }}
+                                </div>
+
+                                <div class="col-md-6">
+                                    {{ form_row(form.pereDecede, {'label': 'Père décédé ?'}) }}
+                                </div>
+
+                                <div class="col-md-6">
+                                    {{ form_row(form.mere, {'label': 'Nom de la mère'}) }}
+                                </div>
+
+                                <div class="col-md-6">
+                                    {{ form_row(form.mereDecede, {'label': 'Mère décédée ?'}) }}
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- CIN -->
+                    <div class="col-12 mt-4">
+
+                        <h5 class="text-primary border-bottom pb-2 mb-3">
+                            <a class="text-decoration-none text-primary"
+                               data-bs-toggle="collapse"
+                               href="#cinSection"
+                               role="button"
+                               aria-expanded="false">
+                                🪪 Carte d’Identité Nationale (CIN) ▼
+                            </a>
+                        </h5>
+
+                        <div class="collapse" id="cinSection">
+
+                            <div class="row">
+
+                                <div class="col-md-4">
+                                    {{ form_row(form.cin, {'label': 'Numéro CIN'}) }}
+                                </div>
+
+                                <div class="col-md-4">
+                                    {{ form_row(form.dateCin, {'label': 'Date de délivrance'}) }}
+                                </div>
+
+                                <div class="col-md-4">
+                                    {{ form_row(form.lieuDelivranceCin, {'label': 'Lieu de délivrance'}) }}
+                                </div>
+
+                                <div class="col-md-6 mt-3">
+                                    {{ form_row(form.contact, {'label': 'Numéro de contact'}) }}
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- DOCUMENTS -->
+                    <div class="col-12 mt-4">
+
+                        <h5 class="text-primary border-bottom pb-2 mb-3">
+                            <a class="text-decoration-none text-primary"
+                               data-bs-toggle="collapse"
+                               href="#documentsSection"
+                               role="button"
+                               aria-expanded="false">
+                                📄 Documents ▼
+                            </a>
+                        </h5>
+
+                        <div class="collapse" id="documentsSection">
+
+                            <div class="row">
+
+                                <div class="col-md-6">
+                                    {{ form_row(form.nomPdf, {'label': 'Document PDF'}) }}
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- BOUTONS -->
+                <div class="d-flex justify-content-end gap-3 mt-5">
+                    <button type="reset" class="btn btn-light border">
+                        🔄 Réinitialiser
+                    </button>
+                    <button type="submit" class="btn btn-success px-4">
+                        💾 Enregistrer l’agent
+                    </button>
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+    <script>
+
+        document.getElementById('{{ form.nomPhotos.vars.id }}')
+            .addEventListener('change', function(e){
+                const file = e.target.files[0];
+                if(file){
+                    const reader = new FileReader();
+                    reader.onload = function(event){
+                        document.getElementById('previewPhoto').src =
+                            event.target.result;
+                    }
+                    reader.readAsDataURL(file);
+
+                }
+
+            });
+
+    </script>
+{% endblock %}
