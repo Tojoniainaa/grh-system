@@ -1,0 +1,224 @@
+{# templates/situation_administrative/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Ressources Humaines - Situation Administrative{% endblock %}
+
+{% block stylesheets %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #003087;
+            --secondary: #0056b3;
+        }
+        .header-ministere {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem 0;
+        }
+        .panel-situation { background: #f8f9fa; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .section-title { color: var(--primary); border-bottom: 3px solid var(--primary); padding-bottom: 10px; }
+        .form-control, .form-select { border-radius: 8px; }
+        .label-strong { font-weight: 600; color: #333; }
+        .masquer { display: none; }
+        .block-conditionnel { transition: all 0.3s; }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid p-4">
+
+        <!-- En-tête Ministère -->
+        <div class="header-ministere text-center mb-4">
+            <h2>MINISTÈRE DES TRAVAUX PUBLICS</h2>
+            <h4 class="mb-0">Direction des Ressources Humaines</h4>
+            <h5>Situation Administrative</h5>
+        </div>
+
+        <div class="panel-situation p-4">
+
+            <!-- 1. Catégorie & Statut -->
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="section-title">1. Catégorie et Statut de l'Agent</h5>
+                </div>
+                <div class="card-body">
+                    <form id="form-categorie" method="post" class="row g-3 align-items-end">
+                        <div class="col-md-6">
+                            <label class="label-strong">Catégorie</label>
+                            <div class="btn-group" role="group">
+                                <select name="categorie" class="form-select">
+                                    {% for cat in categories %}
+                                        <option value="{{ cat.codeCategorie }}">{{ cat.libelleCategorie }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="label-strong">Statut</label>
+                            <select name="Status1erForm" id="Status1erForm" class="form-select" onchange="this.form.submit()">
+                                <option value="">-- Sélectionnez --</option>
+                                <option value="FONC" {% if status == 'FONC' %}selected{% endif %}>FONCTIONNAIRE (FONC)</option>
+                                <option value="EFA" {% if status == 'EFA' %}selected{% endif %}>AGENT CONTRACTUEL (EFA)</option>
+                                <option value="ELD" {% if status == 'ELD' %}selected{% endif %}>AGENT À LA TÂCHE (ELD)</option>
+                                <option value="ECD" {% if status == 'ECD' %}selected{% endif %}>EMPLOYÉ DE COURTE DURÉE (ECD)</option>
+                                <option value="HEE" {% if status == 'HEE' %}selected{% endif %}>HEE</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Blocs conditionnels de recherche (comme dans l'ancien code) -->
+            <div id="block-fonc" class="card mb-4 block-conditionnel">
+                <div class="card-header bg-light"><h5 class="section-title">Recherche - Fonctionnaire</h5></div>
+                <div class="card-body">
+                    <!-- Champs FONC -->
+                    <div class="row g-3">
+                        <div class="col-md-3"><label class="label-strong">Matricule</label><input type="text" class="form-control" name="Matricule" id="Matricule"></div>
+                        <div class="col-md-4">
+                            <label class="label-strong">Corps</label>
+                            <select class="form-select" name="Code_Corps" id="Code_Corps">
+                                <option value="">-- Sélectionnez --</option>
+                                {% for corps in corpsList %}
+                                    <option value="{{ corps.codeCorps }}">{{ corps.libelleCorps }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4"><label class="label-strong">Grade Actuel</label><select class="form-select" name="Code_Gradefonc" id="Grade_FoncActiveADM"></select></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vous pouvez ajouter d'autres blocs conditionnels (EFA, ELD, etc.) ici de la même façon -->
+
+            <!-- ==================== FORMULAIRE PRINCIPAL ==================== -->
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">📋 Enregistrement de la Situation Administrative</h5>
+                </div>
+                <div class="card-body">
+                    <form id="formulaire_Situation_administrative" method="post" action="{{ path('situation_administrative_index') }}" enctype="multipart/form-data">
+
+                        <input type="hidden" name="StatusAgent" id="StatusAgent" value="{{ status|default('') }}">
+
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="label-strong">Statut</label>
+                                <input type="text" class="form-control" readonly value="{{ status|default('') }}">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="label-strong">Matricule</label>
+                                <input type="text" class="form-control" name="Matricule" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="label-strong">Code Corps</label>
+                                <input type="text" class="form-control" name="Code_Corps" id="Code_Corps">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="label-strong">Code Grade</label>
+                                <input type="text" class="form-control" name="Code_Gradefonc" id="Code_Gradefonc">
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="label-strong">Type de décision / Contrat</label>
+                                <select class="form-select" name="Type_Contrat">
+                                    <option value="NOMINATION">NOMINATION</option>
+                                    <option value="RECRUTEMENT">RECRUTEMENT</option>
+                                    <option value="ENGAGEMENT">ENGAGEMENT</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="label-strong">Indice</label>
+                                <select class="form-select" name="Indice" id="Indice"></select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="label-strong">Date d'entrée</label>
+                                <input type="date" class="form-control" name="Date_Entre">
+                            </div>
+                        </div>
+
+                        <!-- Champs conditionnels EFA / ELD / etc. -->
+                        <div id="zone-efa-eld" class="row g-3 mt-3">
+                            <!-- Rempli dynamiquement par JS -->
+                        </div>
+
+                        <div class="row g-3 mt-3">
+                            <div class="col-md-4">
+                                <label class="label-strong">Référence Décision</label>
+                                <input type="text" class="form-control" name="Ref_Notification">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="label-strong">Date Décision</label>
+                                <input type="date" class="form-control" name="Date_Texte">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="label-strong">Date d'effet</label>
+                                <input type="date" class="form-control" name="Date_Effet">
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mt-3">
+                            <div class="col-md-4">
+                                <label class="label-strong">Imputation Budgétaire</label>
+                                <input type="text" class="form-control" name="Imputation_Budgetaire">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="label-strong">Mode de Paiement</label>
+                                <select class="form-select" name="Mode_Paie">
+                                    <option value="VIREMENT BANCAIRE">Virement Bancaire</option>
+                                    <option value="VIREMENT POSTAL">Virement Postal</option>
+                                    <option value="BILLETAGE">Billetage</option>
+                                    <option value="BON DE CAISSE">Bon de Caisse</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="label-strong">Numéro de Compte</label>
+                                <input type="text" class="form-control" name="Numero_Compte">
+                            </div>
+                        </div>
+
+                        <!-- Boutons -->
+                        <div class="d-flex justify-content-end gap-3 mt-5">
+                            <button type="reset" class="btn btn-secondary">Réinitialiser</button>
+                            <button type="submit" name="btn_submit" class="btn btn-success px-5">
+                                <i class="bi bi-check-lg"></i> Valider
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const statusSelect = document.getElementById('Status1erForm');
+            const categorieRadios = document.querySelectorAll('input[name="categorie"]');
+
+            function toggleBlocks() {
+                const status = statusSelect.value;
+                const categorie = document.querySelector('input[name="categorie"]:checked')?.value;
+
+                // Masquer / afficher les blocs selon le statut (logique originale)
+                document.getElementById('block-fonc').classList.toggle('masquer', status !== 'FONC');
+
+                // Vous pouvez ajouter d'autres conditions ici pour EFA, ELD, etc.
+            }
+
+            statusSelect.addEventListener('change', toggleBlocks);
+            categorieRadios.forEach(radio => radio.addEventListener('change', toggleBlocks));
+
+            // Initialisation
+            toggleBlocks();
+        });
+    </script>
+{% endblock %}
