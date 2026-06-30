@@ -23,11 +23,11 @@
     </nav>
 
     <div class="user-box">
-        {% if is_granted('ROLE_ADMIN') %}
+
             <a href="#" class="list-group-item bg-dark text-white">
-                👤 {{ app.user ? app.user.userIdentifier : 'Invité' }}
+                👤
             </a>
-        {% endif %}
+
     </div>
 </header>
 

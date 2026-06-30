@@ -1,0 +1,65 @@
+{# templates/situation_administrative/_partial_efa.html.twig #}
+<div class="card mb-4">
+    <div class="card-header bg-light">
+        <h5 class="section-title">Recherche - Agent Contractuel (EFA)</h5>
+    </div>
+    <div class="card-body">
+        {% if categorie <= 3 %}
+            <!-- EFA Catégorie ≤ 3 (Échelle + Échelon) -->
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="fw-bold">Matricule</label>
+                    <input type="text" name="Matricule" class="form-control">
+                </div>
+                <div class="col-md-4">
+                    <label class="fw-bold">Corps EFA</label>
+                    <select name="Corps_EFA3" class="form-select">
+                        {% for corps in corpsEfa %}
+                            <option value="{{ corps.codeCorps }}">{{ corps.libelleCorps }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="fw-bold">Échelle</label>
+                    <select name="Echelle" class="form-select">
+                        {% for e in echelles %}
+                            <option value="{{ e.echelle }}">{{ e.echelle }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="fw-bold">Échelon</label>
+                    <select name="Echelon" class="form-select">
+                        {% for i in 1..9 %}
+                            <option value="Echelon{{ i }}"> {{ i }}ème</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        {% else %}
+            <!-- EFA Catégorie ≥ 4 -->
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="fw-bold">Matricule</label>
+                    <input type="text" name="Matricule" class="form-control">
+                </div>
+                <div class="col-md-4">
+                    <label class="fw-bold">Corps EFA</label>
+                    <select name="Corps_EFA" class="form-select">
+                        {% for corps in corpsEfa %}
+                            <option value="{{ corps.codeCorps }}">{{ corps.libelleCorps }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <label class="fw-bold">Grade</label>
+                    <select name="Code_Gradefonc" class="form-select">
+                        {% for grade in gradesFonc %}
+                            <option value="{{ grade.codeGrade }}">{{ grade.libelleGrade }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>

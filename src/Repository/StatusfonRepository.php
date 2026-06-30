@@ -2,22 +2,22 @@
 
 namespace App\Repository;
 
-use App\Entity\SituationAdm;
+use App\Entity\Statusfon;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<SituationAdm>
+ * @extends ServiceEntityRepository<Statusfon>
  */
-class SituationAdmRepository extends ServiceEntityRepository
+class StatusfonRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, SituationAdm::class);
+        parent::__construct($registry, Statusfon::class);
     }
 
     //    /**
-    //     * @return SituationAdm[] Returns an array of SituationAdm objects
+    //     * @return Statusfon[] Returns an array of Statusfon objects
     //     */
     //    public function findByExampleField($value): array
     //    {
@@ -31,7 +31,7 @@ class SituationAdmRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?SituationAdm
+    //    public function findOneBySomeField($value): ?Statusfon
     //    {
     //        return $this->createQueryBuilder('s')
     //            ->andWhere('s.exampleField = :val')
@@ -40,19 +40,4 @@ class SituationAdmRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
-
-    // Si tu veux réutiliser l'ancienne fonction liste_tout_SituationAdm
-    public function findAllWithSearch(?string $search = null)
-    {
-        $qb = $this->createQueryBuilder('s');
-
-        if ($search) {
-            $qb->where('s.matricule LIKE :search')
-                ->setParameter('search', '%'.$search.'%');
-        }
-
-        return $qb->orderBy('s.matricule', 'ASC')
-            ->getQuery()
-            ->getResult();
-    }
 }

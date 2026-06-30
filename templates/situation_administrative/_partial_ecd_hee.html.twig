@@ -1,0 +1,27 @@
+{# templates/situation_administrative/_partial_ecd_hee.html.twig #}
+<div class="card mb-4">
+    <div class="card-header bg-light">
+        <h5 class="section-title">Recherche - {{ status == 'ECD' ? 'ECD' : 'HEE' }}</h5>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-3">
+                <label class="fw-bold">Matricule</label>
+                <input type="text" name="Matricule" class="form-control">
+            </div>
+            <div class="col-md-4">
+                <label class="fw-bold">Corps</label>
+                <select name="{{ status == 'ECD' ? 'Corps_ECD' : 'Code_Corpshee' }}" class="form-select">
+                    <option value="">-- Sélectionnez --</option>
+                    {% if status == 'ECD' %}
+                        <option value="ECD">EMPLOYÉ DE COURTE DURÉE</option>
+                    {% else %}
+                        {% for corps in corpsHee %}
+                            <option value="{{ corps.codeCorps }}">{{ corps.libelleCorps }}</option>
+                        {% endfor %}
+                    {% endif %}
+                </select>
+            </div>
+        </div>
+    </div>
+</div>

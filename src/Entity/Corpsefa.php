@@ -2,21 +2,24 @@
 
 namespace App\Entity;
 
-use App\Repository\CorpsfonRepository;
+use App\Repository\CorpsefaRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: CorpsfonRepository::class)]
-#[ORM\Table(name: 'corpsfon')]
-class Corpsfon
+#[ORM\Entity(repositoryClass: CorpsefaRepository::class)]
+#[ORM\Table(name: 'corpsefa')]
+class Corpsefa
 {
     #[ORM\Id]
-    #[ORM\Column(name: "Code_Corps", length: 4)]
+    #[ORM\Column(name: 'Code_Corps', length: 4)]
     private ?string $codeCorps = null;
 
-    #[ORM\Column(name: "Libelle_Corps", length: 50, nullable: true)]
+    #[ORM\Column(name: 'Rang_Corps', length: 2, nullable: true)]
+    private ?string $rangCorps = null;
+
+    #[ORM\Column(name: 'Libelle_Corps', length: 36, nullable: true)]
     private ?string $libelleCorps = null;
 
-    #[ORM\Column(name: "categorie", nullable: true)]
+    #[ORM\Column(name: 'Categorie', nullable: true)]
     private ?int $categorie = null;
 
     public function getCodeCorps(): ?string
@@ -27,6 +30,17 @@ class Corpsfon
     public function setCodeCorps(string $codeCorps): self
     {
         $this->codeCorps = $codeCorps;
+        return $this;
+    }
+
+    public function getRangCorps(): ?string
+    {
+        return $this->rangCorps;
+    }
+
+    public function setRangCorps(?string $rangCorps): self
+    {
+        $this->rangCorps = $rangCorps;
         return $this;
     }
 
@@ -54,6 +68,6 @@ class Corpsfon
 
     public function __toString(): string
     {
-        return $this->libelleCorps ?? $this->codeCorps ?? '';
+        return $this->libelleCorps ?? '';
     }
 }
