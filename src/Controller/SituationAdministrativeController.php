@@ -18,6 +18,7 @@ use App\Repository\SituationAdmRepository;
 use App\Repository\StatusfonRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -223,5 +224,36 @@ class SituationAdministrativeController extends AbstractController
     {
         if (empty($date)) return null;
         return \DateTime::createFromFormat('d/m/Y', $date) ?: null;
+    }
+
+    #[Route('/agent/search/matricule', name: 'agent_search_by_matricule', methods: ['POST'])]
+    public function searchByMatricule(
+        Request $request,
+        AgentsRepository $agentRepo,
+    ): JsonResponse {
+        $data = json_decode($request->getContent(), true) ?? [];
+
+        $matricule = trim($data['matricule'] ?? '');
+
+        if (empty($matricule)) {
+            return $this->json(['success' => false, 'message' => 'Matricule requis'], 400);
+        }
+
+        $agent = $agentRepo->findOneBy(['matricule' => $matricule]);
+
+        if (!$agent) {
+            return $this->json([
+                'success' => false,
+                'message' => 'Matricule non trouvé'
+            ], 404);
+        }
+
+        // Version simplifiée : seulement le matricule + infos de base
+        return $this->json([
+            'success' => true,
+            'agent' => [
+                'matricule' => $agent->getMatricule(),
+            ]
+        ]);
     }
 }

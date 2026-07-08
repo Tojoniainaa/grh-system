@@ -7,12 +7,12 @@
         <div class="row g-3">
             <div class="col-md-3">
                 <label class="fw-bold">Matricule</label>
-                <input type="text" name="Matricule" class="form-control" placeholder="Ex: 12345">
+                <input type="text" id="search_matricule" class="form-control" placeholder="Ex: 12345">
             </div>
 
             <div class="col-md-4">
                 <label class="fw-bold">Corps</label>
-                <select name="Code_Corpsfonc" class="form-select">
+                <select id="search_code_corpsfonc" class="form-select">
                     <option value="">-- Sélectionnez --</option>
                     {% for corps in corpsFonc %}
                         <option value="{{ corps.codeCorps ?? corps.Code_Corps ?? corps.id }}">
@@ -24,7 +24,7 @@
 
             <div class="col-md-5">
                 <label class="fw-bold">Grade Actuel</label>
-                <select name="Code_Gradefonc" class="form-select">
+                <select id="search_code_gradefonc" class="form-select">
                     <option value="">-- Sélectionnez --</option>
                     {% for grade in gradesFonc %}
                         <option value="{{ grade.codeGrade ?? grade.Code_Grade ?? grade.id }}">
@@ -34,5 +34,71 @@
                 </select>
             </div>
         </div>
+
+        <div class="mt-3">
+            <button type="button" id="btn_search" class="btn btn-primary">
+                <i class="fas fa-search"></i> Rechercher
+            </button>
+        </div>
     </div>
 </div>
+{% block javascripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // ==================== Copie automatique des sélections ====================
+        // Corps → Code_Corps
+        const selectCorps = document.getElementById('search_code_corpsfonc');
+        const inputCodeCorps = document.querySelector('input[name="Code_Corps"]');
+        if (selectCorps && inputCodeCorps) {
+            selectCorps.addEventListener('change', function () {
+                inputCodeCorps.value = this.value;
+            });
+        }
+        // Grade → Code_Gradefonc
+        const selectGrade = document.getElementById('search_code_gradefonc');
+        const inputCodeGrade = document.querySelector('input[name="Code_Gradefonc"]');
+
+        if (selectGrade && inputCodeGrade) {
+            selectGrade.addEventListener('change', function () {
+                inputCodeGrade.value = this.value;
+            });
+        }
+        // ==================== Recherche par Matricule (déjà vu précédemment) ====================
+        const btnSearch = document.getElementById('btn_search');
+
+        if (btnSearch) {
+            btnSearch.addEventListener('click', function () {
+                const matricule = document.getElementById('search_matricule').value.trim();
+                if (!matricule) {
+                    alert("Veuillez entrer un matricule !");
+                    return;
+                }
+                btnSearch.disabled = true;
+                btnSearch.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Recherche...';
+                fetch('{{ path("agent_search_by_matricule") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({ matricule: matricule })
+                })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.success && data.agent) {
+                            document.querySelector('input[name="Matricule"]').value = data.agent.matricule || '';
+                            alert("✅ Agent chargé avec succès !");
+                        } else {
+                            alert(data.message || "❌ Matricule non trouvé");
+                        }
+                    })
+                    .catch(() => alert("Erreur de connexion"))
+                    .finally(() => {
+                        btnSearch.disabled = false;
+                        btnSearch.innerHTML = '<i class="fas fa-search"></i> Rechercher';
+                    });
+            });
+        }
+    });
+</script>
+{% endblock %}

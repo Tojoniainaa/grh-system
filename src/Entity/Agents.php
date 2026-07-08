@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\AgentsRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AgentsRepository::class)]
@@ -16,6 +18,10 @@ class Agents
     #[ORM\Column(type: 'string', length: 50)]
     #[Assert\NotBlank()]
     private string $prenom;
+
+    #[ORM\Column(type: 'string', length: 50)]
+    #[Assert\NotBlank()]
+    private string $matricule;
 
     #[ORM\Column(type: 'string', length: 50)]
     #[Assert\NotBlank()]
@@ -90,7 +96,16 @@ class Agents
         $this->nom = $nom;
         return $this;
     }
+    public function getMatricule(): string
+    {
+        return $this->matricule;
+    }
 
+    public function setMatricule(string $matricule): self
+    {
+        $this->matricule = $matricule;
+        return $this;
+    }
     public function getSexe(): string
     {
         return $this->sexe;
@@ -131,7 +146,7 @@ class Agents
 
     public function setAdresse(?string $adresse): self
     {
-        $this->lieuNaissance = $adresse;
+        $this->adresse = $adresse;
         return $this;
     }
 

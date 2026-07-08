@@ -20,6 +20,13 @@ class AgentsType extends AbstractType
     {
         $builder
             // === IDENTITÉ ===
+            ->add('matricule', TextType::class, [
+                'label' => 'Matricule',
+                'attr' => [
+                    'form-control',
+                    'placeholder' => 'Matricule'],
+                'required' => false,
+            ])
 
             ->add('nom', TextType::class, [
                 'label' => 'Nom',
