@@ -45,36 +45,73 @@
 {% block javascripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // ==================== Copie automatique des sélections ====================
-        // Corps → Code_Corps
+        // ==================== Copie automatique des sélections pour le fonctionnaire ====================
         const selectCorps = document.getElementById('search_code_corpsfonc');
         const inputCodeCorps = document.querySelector('input[name="Code_Corps"]');
-        if (selectCorps && inputCodeCorps) {
-            selectCorps.addEventListener('change', function () {
-                inputCodeCorps.value = this.value;
-            });
-        }
-        // Grade → Code_Gradefonc
+
         const selectGrade = document.getElementById('search_code_gradefonc');
         const inputCodeGrade = document.querySelector('input[name="Code_Gradefonc"]');
 
+        const selectIndice = document.querySelector('select[name="Indice"]');
+
+        // Corps → Input->fonctionnnaire
+        if (selectCorps && inputCodeCorps) {
+            selectCorps.addEventListener('change', function () {
+                inputCodeCorps.value = this.value;
+                updateIndiceAuto();
+            });
+        }
+        // Grade → Input->fonctionnaire
         if (selectGrade && inputCodeGrade) {
             selectGrade.addEventListener('change', function () {
                 inputCodeGrade.value = this.value;
+                updateIndiceAuto();
             });
         }
-        // ==================== Recherche par Matricule (déjà vu précédemment) ====================
-        const btnSearch = document.getElementById('btn_search');
 
+        // ==================== Mise à jour automatique de l'Indice status FONCTIONNAIRE ====================
+        function updateIndiceAuto() {
+            const codeCorps = inputCodeCorps ? inputCodeCorps.value.trim() : '';
+            const codeGrade = inputCodeGrade ? inputCodeGrade.value.trim() : '';
+
+            if (!codeCorps || !codeGrade || !selectIndice) return;
+
+            // Option 1 : Appel Ajax pour récupérer l'indice correspondant POUR FONCTINNAIRE
+            fetch('{{ path("get_indice_by_corps_grade") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    codeCorps: codeCorps,
+                    codeGrade: codeGrade
+                })
+            })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success && data.indice) {
+                        selectIndice.value = data.indice;
+                    }
+                })
+                .catch(() => {
+                    // Option de secours : rien ou message silencieux
+                });
+        }
+
+        // ==================== Recherche par Matricule ====================
+        const btnSearch = document.getElementById('btn_search');
         if (btnSearch) {
             btnSearch.addEventListener('click', function () {
                 const matricule = document.getElementById('search_matricule').value.trim();
+
                 if (!matricule) {
-                    alert("Veuillez entrer un matricule !");
+                    showToast("Veuillez entrer un matricule !");
                     return;
                 }
+
                 btnSearch.disabled = true;
                 btnSearch.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Recherche...';
+
                 fetch('{{ path("agent_search_by_matricule") }}', {
                     method: 'POST',
                     headers: {
@@ -87,17 +124,60 @@
                     .then(data => {
                         if (data.success && data.agent) {
                             document.querySelector('input[name="Matricule"]').value = data.agent.matricule || '';
-                            alert("✅ Agent chargé avec succès !");
+                            showToast("Agent chargé avec succès !");
                         } else {
-                            alert(data.message || "❌ Matricule non trouvé");
+                            showToast(data.message || "Matricule non trouvé");
                         }
                     })
-                    .catch(() => alert("Erreur de connexion"))
+                    .catch(() => showToast("Erreur de connexion"))
                     .finally(() => {
                         btnSearch.disabled = false;
                         btnSearch.innerHTML = '<i class="fas fa-search"></i> Rechercher';
                     });
             });
+        }
+        // Mise à jour initiale au cas où les champs sont déjà remplis
+        if (inputCodeCorps && inputCodeGrade) {
+            updateIndiceAuto();
+        }
+
+        // ==================== Fonction Toast ====================
+        function showToast(message, type = "info") {
+            // Supprime un ancien toast s'il existe
+            const oldToast = document.querySelector('.custom-toast');
+            if (oldToast) oldToast.remove();
+            const toast = document.createElement('div');
+            toast.className = `custom-toast toast-${type}`;
+            toast.style.cssText = `position: fixed;top: 20px;right: 20px;padding: 14px 20px;border-radius: 8px;color: white;font-weight: 500;box-shadow: 0 4px 12px rgba(0,0,0,0.2);z-index: 9999;display: flex;align-items: center;gap: 10px;min-width: 280px;`;
+            let icon = '';
+            switch(type) {
+                case 'success':
+                    icon = '✅';
+                    toast.style.backgroundColor = '#28a745';
+                    break;
+                case 'error':
+                    icon = '❌';
+                    toast.style.backgroundColor = '#dc3545';
+                    break;
+                case 'warning':
+                    icon = '⚠️';
+                    toast.style.backgroundColor = '#ffc107';
+                    toast.style.color = '#212529';
+                    break;
+                default:
+                    icon = 'ℹ️';
+                    toast.style.backgroundColor = '#17a2b8';
+            }
+
+            toast.innerHTML = `${icon} ${message}`;
+            document.body.appendChild(toast);
+
+            // Auto-disparition après 4 secondes
+            setTimeout(() => {
+                toast.style.transition = 'opacity 0.5s';
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 500);
+            }, 4000);
         }
     });
 </script>

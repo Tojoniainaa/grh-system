@@ -5,8 +5,10 @@ namespace App\Controller;
 use App\Entity\Agents;
 use App\Form\AgentsType;
 use App\Repository\AgentsRepository;
+use App\Repository\StatusfonRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -60,6 +62,37 @@ class AgentsController extends AbstractController
 
         return $this->render('agents/new.html.twig', [
             'form' => $form->createView(),
+        ]);
+    }
+    #[Route('/get/indice', name: 'get_indice_by_corps_grade', methods: ['POST'])]
+    public function getIndiceByCorpsGrade(
+        Request $request,
+        StatusfonRepository $statusfonRepo
+    ): JsonResponse {
+        $data = json_decode($request->getContent(), true) ?? [];
+
+        $codeCorps = trim($data['codeCorps'] ?? '');
+        $codeGrade = trim($data['codeGrade'] ?? '');
+
+        if (empty($codeCorps) || empty($codeGrade)) {
+            return $this->json([
+                'success' => false,
+                'message' => 'Code Corps et Code Grade requis'
+            ], 400);
+        }
+
+        $status = $statusfonRepo->findOneBy(['codeCorps' => $codeCorps, 'grade'     => $codeGrade]);
+
+        if (!$status || $status->getIndice() === null) {
+            return $this->json([
+                'success' => false,
+                'message' => 'Aucun indice trouvé pour cette combinaison'
+            ]);
+        }
+
+        return $this->json([
+            'success' => true,
+            'indice'  => $status->getIndice()
         ]);
     }
 }

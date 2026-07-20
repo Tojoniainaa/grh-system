@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\SituationAdm;
 use App\Repository\AgentsRepository;
+use App\Repository\BudgetRepository;
 use App\Repository\CategRepository;
 use App\Repository\CorpsefaRepository;
 use App\Repository\CorpseldRepository;
@@ -40,7 +41,8 @@ class SituationAdministrativeController extends AbstractController
         CorpsHeeRepository $corpsHeeRepository,
         GradeFonRepository $gradeFonRepository,
         IndiceRepository $indiceRepository,
-        EchelleRepository $echelleRepository
+        EchelleRepository $echelleRepository,
+        BudgetRepository $budgetRepository
     ): Response {
 
         $status    = $request->get('Status1erForm');
@@ -69,6 +71,7 @@ class SituationAdministrativeController extends AbstractController
 
         // Récupération des indices (logique ancienne)
         $indices = $indiceRepository->listeIndice($request->request->all());
+        $budgets = $budgetRepository->listeBudget($request->request->all());
 
         $situation = new SituationAdm();
 
@@ -116,6 +119,7 @@ class SituationAdministrativeController extends AbstractController
             'gradesFonc' => $grades,
             'echelles'   => $echelles,
             'indices'    => $indices,
+            'budgets' => $budgets,
         ]);
     }
 

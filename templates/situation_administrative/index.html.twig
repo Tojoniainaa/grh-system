@@ -119,20 +119,35 @@
                         <!-- Autres champs (Date, Référence, etc.) -->
                         <div class="row g-3 mt-3">
                             <div class="col-md-3">
-                                <label>Date d'entrée</label>
+                                <label class="form-label fw-bold">Date d'entrée l'administration</label>
                                 <input type="date" name="Date_Entre" class="form-control">
                             </div>
                             <div class="col-md-3">
-                                <label>Date d'effet</label>
+                                <label class="form-label fw-bold">Date d'effet</label>
                                 <input type="date" name="Date_Effet" class="form-control">
                             </div>
                             <div class="col-md-3">
-                                <label>Date Notification</label>
+                                <label class="form-label fw-bold">Date Notification</label>
                                 <input type="date" name="Date_Notif" class="form-control">
                             </div>
                             <div class="col-md-3">
-                                <label>Date Texte</label>
+                                <label class="form-label fw-bold">Date Texte</label>
                                 <input type="date" name="Date_Texte" class="form-control">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">Réference de Decision</label>
+                                <input type="date" name="Date_Texte" class="form-control">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">Imputation budgétaire</label>
+                                <select name="imp_budgetaire" class="form-select">
+                                    <option value="">-- Sélectionner --</option>
+                                    {% for budget in budgets %}
+                                        <option value="{{ budget.code_budget }}">
+                                            {{ budget.libelle_budget }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
                             </div>
                         </div>
 

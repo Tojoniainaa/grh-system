@@ -39,5 +39,17 @@ class BudgetRepository extends ServiceEntityRepository
     //            ->getQuery()
     //            ->getOneOrNullResult()
     //        ;
-    //    }
+    //    }*
+    public function listeBudget(array $params = []): array
+    {
+        return $this->createQueryBuilder('b')
+            ->select(
+                'b.id AS id',
+                'b.codeBudget AS code_budget',
+                'b.libelleBudget AS libelle_budget'
+            )
+            ->orderBy('b.libelleBudget', 'ASC')
+            ->getQuery()
+            ->getArrayResult();
+    }
 }
