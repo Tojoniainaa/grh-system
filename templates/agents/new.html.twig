@@ -1,220 +1,447 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Ajout d'un nouvel agent{% endblock %}
+{% block title %}Ajout d'un nouvel agent — GRH System{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        .page-header {
+            margin-bottom: 1.75rem;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.25rem;
+        }
+
+        .page-subtitle {
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        .modern-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px -5px rgba(15, 44, 89, 0.07);
+            overflow: hidden;
+        }
+
+        .card-header-modern {
+            background: linear-gradient(to right, #f8fafc, #f1f5f9);
+            border-bottom: 1px solid #e2e8f0;
+            padding: 1.1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card-header-modern .icon-box {
+            width: 40px;
+            height: 40px;
+            border-radius: 11px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.15rem;
+        }
+
+        .card-header-modern h5 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #0f172a;
+        }
+
+        .card-body-modern {
+            padding: 1.75rem;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.6rem;
+            border-bottom: 2px solid #dbeafe;
+        }
+
+        .section-title i {
+            font-size: 1.1rem;
+        }
+
+        /* Photo upload */
+        .photo-upload {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .photo-preview {
+            width: 160px;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 4px solid #e2e8f0;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            transition: all 0.25s ease;
+        }
+
+        .photo-upload:hover .photo-preview {
+            border-color: #3b82f6;
+            transform: scale(1.03);
+        }
+
+        .photo-badge {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.15rem;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+            border: 3px solid white;
+        }
+
+        .photo-label {
+            margin-top: 0.75rem;
+            font-size: 0.85rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* Collapse sections */
+        .collapse-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            color: #1e40af;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .collapse-toggle:hover {
+            color: #1d4ed8;
+        }
+
+        .collapse-toggle .chevron {
+            transition: transform 0.25s ease;
+        }
+
+        .collapse-toggle[aria-expanded="true"] .chevron {
+            transform: rotate(180deg);
+        }
+
+        .collapse-body {
+            padding-top: 1rem;
+        }
+
+        /* Form controls */
+        .form-label {
+            font-weight: 500;
+            font-size: 0.875rem;
+            color: #334155;
+            margin-bottom: 0.35rem;
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 1.5px solid #e2e8f0;
+            padding: 0.6rem 0.9rem;
+            font-size: 0.925rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        /* Buttons */
+        .btn-ghost {
+            background: transparent;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 0.7rem 1.4rem;
+            font-weight: 500;
+            color: #64748b;
+            transition: all 0.2s;
+        }
+
+        .btn-ghost:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            color: #1e293b;
+        }
+
+        .btn-success-modern {
+            background: linear-gradient(135deg, #059669, #10b981);
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            color: white;
+            box-shadow: 0 4px 14px rgba(5, 150, 105, 0.3);
+            transition: all 0.2s;
+        }
+
+        .btn-success-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(5, 150, 105, 0.4);
+            color: white;
+        }
+
+        .form-divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #e2e8f0, transparent);
+            margin: 1.75rem 0;
+        }
+    </style>
+{% endblock %}
 
 {% block body %}
-    <div class="container-fluid mt-4">
-        {# HEADER #}
+    <div class="page-header">
+        <h1 class="page-title">
+            <i class="bi bi-person-plus-fill text-primary me-2"></i>
+            Ajout d’un nouvel agent
+        </h1>
+        <p class="page-subtitle">Renseignez les informations d’identité et les documents de l’agent</p>
+    </div>
 
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-primary text-white py-3">
-                <strong>Informations de l’agent</strong>
+    <div class="modern-card">
+        <div class="card-header-modern">
+            <div class="icon-box">
+                <i class="bi bi-person-vcard"></i>
             </div>
+            <div>
+                <h5>Informations de l’agent</h5>
+                <small class="text-muted">Tous les champs marqués d’un * sont obligatoires</small>
+            </div>
+        </div>
 
-            <div class="card-body p-4">
-                {{ form_start(form) }}
+        <div class="card-body-modern">
+            {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
 
-                <div class="row g-4">
+            <div class="row g-4">
 
-                    <!-- IDENTITÉ -->
-                    <!-- IDENTITE -->
-                    <div class="col-12">
-                        <h5 class="text-primary border-bottom pb-2 mb-3">
-                            Identité
-                        </h5>
+                {# ========== IDENTITÉ + PHOTO ========== #}
+                <div class="col-12">
+                    <div class="section-title">
+                        <i class="bi bi-person-badge"></i>
+                        Identité
                     </div>
+                </div>
 
-                    <div class="col-md-9">
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                {{ form_row(form.matricule) }}
-                            </div>
-
-                            <div class="col-md-6">
-                                {{ form_row(form.nom) }}
-                            </div>
-
-                            <div class="col-md-6">
-                                {{ form_row(form.prenom) }}
-                            </div>
-
-                            <div class="col-md-6">
-                                {{ form_row(form.sexe) }}
-                            </div>
-
-                            <div class="col-md-6">
-                                {{ form_row(form.dateNaissance) }}
-                            </div>
-
-                            <div class="col-md-6">
-                                {{ form_row(form.lieuNaissance) }}
-                            </div>
-                            <div class="col-md-6">
-                                {{ form_row(form.adresse) }}
-                            </div>
-
-
+                <div class="col-lg-9">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            {{ form_row(form.matricule) }}
                         </div>
-
+                        <div class="col-md-6">
+                            {{ form_row(form.nom) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.prenom) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.sexe) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.dateNaissance) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.lieuNaissance) }}
+                        </div>
+                        <div class="col-md-12">
+                            {{ form_row(form.adresse) }}
+                        </div>
                     </div>
+                </div>
 
-                    <div class="col-md-3 text-center">
-                        <label for="{{ form.nomPhotos.vars.id }}" style="cursor:pointer; position:relative;">
-                            <img id="previewPhoto" src="{{ asset('images/user.png') }}" class="rounded-circle border shadow" width="170" height="170" style="object-fit:cover">
-
-                            <!-- Icône appareil photo -->
-                            <div class="bg-primary text-white rounded-circle shadow" style="position:absolute; bottom:15px; right:20px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:20px;">
-                                <i class="bi bi-camera-fill"></i>
-                            </div>
-
-                            <div class="mt-2 text-muted">
-                                Ajouter une photo
-                            </div>
-
-                        </label>
-
+                {# Photo #}
+                <div class="col-lg-3 text-center">
+                    <label for="{{ form.nomPhotos.vars.id }}" class="photo-upload">
+                        <img id="previewPhoto"
+                             src="{{ asset('images/user.png') }}"
+                             class="photo-preview"
+                             alt="Photo agent">
+                        <div class="photo-badge">
+                            <i class="bi bi-camera-fill"></i>
+                        </div>
+                        <div class="photo-label">Ajouter une photo</div>
+                    </label>
+                    <div class="d-none">
                         {{ form_widget(form.nomPhotos) }}
-
                     </div>
+                </div>
 
-                    <!-- PARENTS -->
-                    <div class="col-12 mt-4">
+                <div class="col-12">
+                    <div class="form-divider"></div>
+                </div>
 
-                        <h5 class="text-primary border-bottom pb-2 mb-3">
-                            <a class="text-decoration-none text-primary"
-                               data-bs-toggle="collapse"
-                               href="#parentsSection"
-                               role="button"
-                               aria-expanded="false">
-                                👨‍👩‍👧 Parents ▼
-                            </a>
-                        </h5>
+                {# ========== PARENTS (repliable) ========== #}
+                <div class="col-12">
+                    <button class="collapse-toggle section-title w-100"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#parentsSection"
+                            aria-expanded="false"
+                            aria-controls="parentsSection">
+                    <span>
+                        <i class="bi bi-people-fill me-1"></i>
+                        Parents
+                    </span>
+                        <i class="bi bi-chevron-down chevron"></i>
+                    </button>
 
-                        <div class="collapse" id="parentsSection">
-
-                            <div class="row">
-
+                    <div class="collapse" id="parentsSection">
+                        <div class="collapse-body">
+                            <div class="row g-3">
                                 <div class="col-md-6">
                                     {{ form_row(form.pere, {'label': 'Nom du père'}) }}
                                 </div>
-
                                 <div class="col-md-6">
                                     {{ form_row(form.pereDecede, {'label': 'Père décédé ?'}) }}
                                 </div>
-
                                 <div class="col-md-6">
                                     {{ form_row(form.mere, {'label': 'Nom de la mère'}) }}
                                 </div>
-
                                 <div class="col-md-6">
                                     {{ form_row(form.mereDecede, {'label': 'Mère décédée ?'}) }}
                                 </div>
-
                             </div>
-
                         </div>
-
                     </div>
+                </div>
 
-                    <!-- CIN -->
-                    <div class="col-12 mt-4">
+                <div class="col-12">
+                    <div class="form-divider"></div>
+                </div>
 
-                        <h5 class="text-primary border-bottom pb-2 mb-3">
-                            <a class="text-decoration-none text-primary"
-                               data-bs-toggle="collapse"
-                               href="#cinSection"
-                               role="button"
-                               aria-expanded="false">
-                                🪪 Carte d’Identité Nationale (CIN) ▼
-                            </a>
-                        </h5>
+                {# ========== CIN (repliable) ========== #}
+                <div class="col-12">
+                    <button class="collapse-toggle section-title w-100"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#cinSection"
+                            aria-expanded="false"
+                            aria-controls="cinSection">
+                    <span>
+                        <i class="bi bi-person-vcard me-1"></i>
+                        Carte d’Identité Nationale (CIN)
+                    </span>
+                        <i class="bi bi-chevron-down chevron"></i>
+                    </button>
 
-                        <div class="collapse" id="cinSection">
-
-                            <div class="row">
-
+                    <div class="collapse" id="cinSection">
+                        <div class="collapse-body">
+                            <div class="row g-3">
                                 <div class="col-md-4">
                                     {{ form_row(form.cin, {'label': 'Numéro CIN'}) }}
                                 </div>
-
                                 <div class="col-md-4">
                                     {{ form_row(form.dateCin, {'label': 'Date de délivrance'}) }}
                                 </div>
-
                                 <div class="col-md-4">
                                     {{ form_row(form.lieuDelivranceCin, {'label': 'Lieu de délivrance'}) }}
                                 </div>
-
-                                <div class="col-md-6 mt-3">
+                                <div class="col-md-6">
                                     {{ form_row(form.contact, {'label': 'Numéro de contact'}) }}
                                 </div>
-
                             </div>
-
                         </div>
-
                     </div>
+                </div>
 
-                    <!-- DOCUMENTS -->
-                    <div class="col-12 mt-4">
+                <div class="col-12">
+                    <div class="form-divider"></div>
+                </div>
 
-                        <h5 class="text-primary border-bottom pb-2 mb-3">
-                            <a class="text-decoration-none text-primary"
-                               data-bs-toggle="collapse"
-                               href="#documentsSection"
-                               role="button"
-                               aria-expanded="false">
-                                📄 Documents ▼
-                            </a>
-                        </h5>
+                {# ========== DOCUMENTS (repliable) ========== #}
+                <div class="col-12">
+                    <button class="collapse-toggle section-title w-100"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#documentsSection"
+                            aria-expanded="false"
+                            aria-controls="documentsSection">
+                    <span>
+                        <i class="bi bi-file-earmark-pdf me-1"></i>
+                        Documents
+                    </span>
+                        <i class="bi bi-chevron-down chevron"></i>
+                    </button>
 
-                        <div class="collapse" id="documentsSection">
-
-                            <div class="row">
-
+                    <div class="collapse" id="documentsSection">
+                        <div class="collapse-body">
+                            <div class="row g-3">
                                 <div class="col-md-6">
                                     {{ form_row(form.nomPdf, {'label': 'Document PDF'}) }}
                                 </div>
-
                             </div>
-
                         </div>
-
                     </div>
-
                 </div>
-
-                <!-- BOUTONS -->
-                <div class="d-flex justify-content-end gap-3 mt-5">
-                    <button type="reset" class="btn btn-light border">
-                        🔄 Réinitialiser
-                    </button>
-                    <button type="submit" class="btn btn-success px-4">
-                        💾 Enregistrer l’agent
-                    </button>
-                </div>
-
-                {{ form_end(form) }}
             </div>
+
+            {# Boutons #}
+            <div class="d-flex justify-content-end gap-3 mt-5 pt-2">
+                <button type="reset" class="btn btn-ghost">
+                    <i class="bi bi-arrow-counterclockwise me-1"></i>
+                    Réinitialiser
+                </button>
+                <button type="submit" class="btn btn-success-modern">
+                    <i class="bi bi-check2-circle me-1"></i>
+                    Enregistrer l’agent
+                </button>
+            </div>
+
+            {{ form_end(form) }}
         </div>
     </div>
+
     <script>
-
+        // Prévisualisation photo
         document.getElementById('{{ form.nomPhotos.vars.id }}')
-            .addEventListener('change', function(e){
+            .addEventListener('change', function (e) {
                 const file = e.target.files[0];
-                if(file){
+                if (file) {
                     const reader = new FileReader();
-                    reader.onload = function(event){
-                        document.getElementById('previewPhoto').src =
-                            event.target.result;
-                    }
+                    reader.onload = function (event) {
+                        document.getElementById('previewPhoto').src = event.target.result;
+                    };
                     reader.readAsDataURL(file);
-
                 }
-
             });
 
+        // Rotation des chevrons des sections collapsibles
+        document.querySelectorAll('.collapse-toggle').forEach(btn => {
+            const target = document.querySelector(btn.getAttribute('data-bs-target'));
+            if (target) {
+                target.addEventListener('shown.bs.collapse', () => {
+                    btn.setAttribute('aria-expanded', 'true');
+                });
+                target.addEventListener('hidden.bs.collapse', () => {
+                    btn.setAttribute('aria-expanded', 'false');
+                });
+            }
+        });
     </script>
 {% endblock %}

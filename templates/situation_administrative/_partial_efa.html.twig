@@ -30,8 +30,9 @@
                 <div class="col-md-2">
                     <label class="fw-bold">Échelon</label>
                     <select name="Echelon" class="form-select">
+                        <option value="">-- Choisir --</option>
                         {% for i in 1..9 %}
-                            <option value="Echelon{{ i }}"> {{ i }}ème</option>
+                            <option value="Echelon{{ i }}">{{ i }}ème</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -63,3 +64,242 @@
         {% endif %}
     </div>
 </div>
+{% block javascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // =====================================================
+            // Éléments communs
+            // =====================================================
+            const indiceSelect = document.getElementById('select_Indice') || document.querySelector('select[name="Indice"]');
+
+            const categorie = document.querySelector('input[name="categorie"]')?.value || document.querySelector('input[name="categorie"]:checked')?.value;
+
+            if (!indiceSelect) {
+                console.warn("Select Indice introuvable");
+                return;
+            }
+
+            // =====================================================
+            // ===== CAS EFA ≤ 3 (Echelle + Echelon) =====
+            // =====================================================
+            const echelleSelect = document.querySelector('select[name="Echelle"]');
+            const echelonSelect = document.querySelector('select[name="Echelon"]');
+
+            // Champs cachés éventuels
+            const hiddenEchelle = document.getElementById('hidden_Echelle');
+            const hiddenEchelon = document.getElementById('hidden_Echelon');
+
+            function chargerIndiceEfa() {
+                const echelle = echelleSelect?.value || hiddenEchelle?.value;
+                const echelon = echelonSelect?.value || hiddenEchelon?.value;
+
+                if (!echelle || !echelon) {
+                    console.log("Echelle ou Echelon vide");
+                    return;
+                }
+
+                const payload = {echelle: echelle, echelon: echelon, categorie: categorie
+                };
+
+                fetch('{{ path('get_indice_efa') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify(payload)
+                })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.success) {
+                            indiceSelect.innerHTML = '';
+                            const option = document.createElement('option');
+                            option.value = data.indice;
+                            option.textContent = data.indice;
+                            option.selected = true;
+                            indiceSelect.appendChild(option);
+                        } else {
+                            console.warn("Erreur indice ≤3 :", data.message);
+                        }
+                    })
+                    .catch(err => console.error("Fetch erreur ≤3 :", err));
+            }
+
+            // Synchronisation select → hidden (≤ 3)
+            function syncHiddenEfa3() {
+                if (echelleSelect && hiddenEchelle) hiddenEchelle.value = echelleSelect.value;
+                if (echelonSelect && hiddenEchelon) hiddenEchelon.value = echelonSelect.value;
+            }
+
+            if (echelleSelect) {
+                echelleSelect.addEventListener('change', () => {
+                    syncHiddenEfa3();
+                    chargerIndiceEfa();
+                });
+            }
+            if (echelonSelect) {
+                echelonSelect.addEventListener('change', () => {
+                    syncHiddenEfa3();
+                    chargerIndiceEfa();
+                });
+            }
+
+            // =====================================================
+            // ===== CAS EFA ≥ 4 (Corps + Grade) =====
+            // =====================================================
+            const corpsSelect = document.querySelector('select[name="Corps_EFA"]');
+            const gradeSelect = document.querySelector('select[name="Code_Gradefonc"]');
+
+            // Champs cachés
+            const hiddenCorps = document.getElementById('hidden_Corps_EFA');
+            const hiddenGrade = document.getElementById('hidden_Code_Gradefonc');
+
+            function chargerIndiceEfa4() {
+                const corps = corpsSelect?.value || hiddenCorps?.value;
+                const grade = gradeSelect?.value || hiddenGrade?.value;
+
+                if (!corps || !grade) {
+                    console.log("Corps ou Grade vide");
+                    return;
+                }
+
+                const payload = {
+                    codeCorps: corps,
+                    codeGrade: grade,
+                    categorie: categorie
+                };
+
+                fetch('{{ path('get_indice_efa4') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify(payload)
+                })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.success) {
+                            indiceSelect.innerHTML = '';
+                            const option = document.createElement('option');
+                            option.value = data.indice;
+                            option.textContent = data.indice;
+                            option.selected = true;
+                            indiceSelect.appendChild(option);
+                        } else {
+                            console.warn("Erreur indice ≥4 :", data.message);
+                            indiceSelect.innerHTML = '<option value="">-- Aucun indice --</option>';
+                        }
+                    })
+                    .catch(err => console.error("Fetch erreur ≥4 :", err));
+            }
+
+            // Synchronisation select → hidden (≥ 4)
+            function syncHiddenEfa4() {
+                if (corpsSelect && hiddenCorps) hiddenCorps.value = corpsSelect.value;
+                if (gradeSelect && hiddenGrade) hiddenGrade.value = gradeSelect.value;
+            }
+            if (corpsSelect) {
+                corpsSelect.addEventListener('change', () => {
+                    syncHiddenEfa4();
+                    chargerIndiceEfa4();
+                });
+            }
+            if (gradeSelect) {
+                gradeSelect.addEventListener('change', () => {
+                    syncHiddenEfa4();
+                    chargerIndiceEfa4();
+                });
+            }
+
+            // =====================================================
+            // Chargement automatique au démarrage
+            // =====================================================
+            if (categorie <= 3) {
+                if ((echelleSelect?.value || hiddenEchelle?.value) &&
+                    (echelonSelect?.value || hiddenEchelon?.value)) {
+                    console.log("Chargement auto indice EFA ≤ 3");
+                    syncHiddenEfa3();
+                    chargerIndiceEfa();
+                }
+            } else if (categorie >= 4) {
+                if ((corpsSelect?.value || hiddenCorps?.value) &&
+                    (gradeSelect?.value || hiddenGrade?.value)) {
+                    console.log("Chargement auto indice EFA ≥ 4");
+                    syncHiddenEfa4();
+                    chargerIndiceEfa4();
+                }
+            }
+        });
+        document.addEventListener('DOMContentLoaded', function () {
+            // ===== Fonction de synchronisation =====
+            function syncHidden(sourceName, hiddenId) {
+                const source = document.querySelector(`select[name="${sourceName}"], input[name="${sourceName}"]`);
+                const hidden = document.getElementById(hiddenId);
+
+                if (source && hidden) {
+                    hidden.value = source.value;
+                    source.addEventListener('change', function () {
+                        hidden.value = this.value;
+                    });
+                }
+            }
+
+            // EFA ≤ 3
+            syncHidden('Echelle', 'hidden_Echelle');
+            syncHidden('Echelon', 'hidden_Echelon');
+            syncHidden('Corps_EFA3', 'hidden_Corps_EFA3');
+
+            // EFA ≥ 4
+            syncHidden('Corps_EFA', 'hidden_Corps_EFA');
+            syncHidden('Code_Gradefonc', 'hidden_Code_Gradefonc');
+
+
+            // ===== Récupération Indice pour EFA ≤ 3 =====
+            const echelleSelect = document.querySelector('select[name="Echelle"]');
+            const echelonSelect = document.querySelector('select[name="Echelon"]');
+            const indiceSelect  = document.getElementById('select_Indice');
+            const categorie     = document.querySelector('#form_situation input[name="categorie"]')?.value;
+
+            function chargerIndiceEfa() {
+                if (!echelleSelect || !echelonSelect || !indiceSelect) return;
+                const echelle = echelleSelect.value;
+                const echelon = echelonSelect.value;
+                if (!echelle || !echelon) return;
+
+                fetch('{{ path('get_indice_efa') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({
+                        echelle: echelle,
+                        echelon: echelon,
+                        categorie: categorie
+                    })
+                })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.success) {
+                            indiceSelect.innerHTML = '';
+                            const opt = new Option(data.indice, data.indice, true, true);
+                            indiceSelect.add(opt);
+                        } else {
+                            console.warn(data.message);
+                        }
+                    })
+                    .catch(err => console.error(err));
+            }
+
+            if (echelleSelect) echelleSelect.addEventListener('change', chargerIndiceEfa);
+            if (echelonSelect) echelonSelect.addEventListener('change', chargerIndiceEfa);
+
+            // Charge au démarrage
+            if (echelleSelect && echelonSelect && echelleSelect.value && echelonSelect.value) {
+                chargerIndiceEfa();
+            }
+        });
+    </script>
+{% endblock %}

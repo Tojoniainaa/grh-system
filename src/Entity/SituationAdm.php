@@ -19,19 +19,19 @@ class SituationAdm
     #[Assert\NotBlank]
     private ?string $matricule = null;
 
-    #[ORM\Column(type: 'date', nullable: false)]
+    #[ORM\Column(type: 'date', nullable: true)]
     private ?\DateTimeInterface $dateEffet = null;
 
-    #[ORM\Column(type: 'date', nullable: false)]
+    #[ORM\Column(type: 'date', nullable: true)]
     private ?\DateTimeInterface $dateEntre = null;
 
-    #[ORM\Column(length: 15, nullable: false)]
+    #[ORM\Column(length: 15, nullable: true)]
     private ?string $statu = null;
 
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $codeGrade = null;
 
-    #[ORM\Column(length: 25, nullable: false)]
+    #[ORM\Column(length: 25, nullable: true)]
     private ?string $codeCorps = null;
 
     #[ORM\Column(nullable: true)]
@@ -58,10 +58,10 @@ class SituationAdm
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $typeContrat = null;
 
-    #[ORM\Column(type: 'date', nullable: false)]
+    #[ORM\Column(type: 'date', nullable: true)]
     private ?\DateTimeInterface $dateDebContrat = null;
 
-    #[ORM\Column(type: 'date', nullable: false)]
+    #[ORM\Column(type: 'date', nullable: true)]
     private ?\DateTimeInterface $dateFinContrat = null;
 
     #[ORM\Column(length: 20, nullable: true)]
@@ -111,9 +111,10 @@ class SituationAdm
         return $this->dateEffet;
     }
 
-    public function setDateEffet(\DateTimeInterface $dateEffet): self
+    public function setDateEffet(?\DateTimeInterface $dateEffet): self
     {
         $this->dateEffet = $dateEffet;
+
         return $this;
     }
 
@@ -122,7 +123,7 @@ class SituationAdm
         return $this->dateEntre;
     }
 
-    public function setDateEntre(\DateTimeInterface $dateEntre): self
+    public function setDateEntre(?\DateTimeInterface $dateEntre): self
     {
         $this->dateEntre = $dateEntre;
         return $this;
@@ -255,7 +256,7 @@ class SituationAdm
         return $this->dateDebContrat;
     }
 
-    public function setDateDebContrat(\DateTimeInterface $dateDebContrat): self
+    public function setDateDebContrat(?\DateTimeInterface $dateDebContrat): self
     {
         $this->dateDebContrat = $dateDebContrat;
         return $this;
@@ -266,7 +267,7 @@ class SituationAdm
         return $this->dateFinContrat;
     }
 
-    public function setDateFinContrat(\DateTimeInterface $dateFinContrat): self
+    public function setDateFinContrat(?\DateTimeInterface $dateFinContrat): self
     {
         $this->dateFinContrat = $dateFinContrat;
         return $this;

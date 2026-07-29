@@ -45,42 +45,36 @@
 {% block javascripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // ==================== Copie automatique des sélections pour le fonctionnaire ====================
-        const selectCorps = document.getElementById('search_code_corpsfonc');
-        const inputCodeCorps = document.querySelector('input[name="Code_Corps"]');
+        // ==================== Éléments ====================
+        const selectCorps   = document.getElementById('search_code_corpsfonc');
+        const selectGrade   = document.getElementById('search_code_gradefonc');
+        const selectIndice  = document.querySelector('select[name="Indice"]') || document.getElementById('select_Indice');
 
-        const selectGrade = document.getElementById('search_code_gradefonc');
-        const inputCodeGrade = document.querySelector('input[name="Code_Gradefonc"]');
+        // Champs cachés
+        const inputCodeCorps = document.getElementById('hidden_Code_Corps') || document.querySelector('input[name="Code_Corps"]');
+        const inputCodeGrade = document.getElementById('hidden_Code_Gradefonc') || document.querySelector('input[name="Code_Gradefonc"]');
 
-        const selectIndice = document.querySelector('select[name="Indice"]');
-
-        // Corps → Input->fonctionnnaire
-        if (selectCorps && inputCodeCorps) {
-            selectCorps.addEventListener('change', function () {
-                inputCodeCorps.value = this.value;
-                updateIndiceAuto();
-            });
-        }
-        // Grade → Input->fonctionnaire
-        if (selectGrade && inputCodeGrade) {
-            selectGrade.addEventListener('change', function () {
-                inputCodeGrade.value = this.value;
-                updateIndiceAuto();
-            });
+        // ==================== Synchronisation select → hidden ====================
+        function syncHiddenFonc() {
+            if (selectCorps && inputCodeCorps) {
+                inputCodeCorps.value = selectCorps.value;
+            }
+            if (selectGrade && inputCodeGrade) {
+                inputCodeGrade.value = selectGrade.value;
+            }
         }
 
-        // ==================== Mise à jour automatique de l'Indice status FONCTIONNAIRE ====================
+        // ==================== Mise à jour automatique de l'Indice ====================
         function updateIndiceAuto() {
             const codeCorps = inputCodeCorps ? inputCodeCorps.value.trim() : '';
             const codeGrade = inputCodeGrade ? inputCodeGrade.value.trim() : '';
 
             if (!codeCorps || !codeGrade || !selectIndice) return;
-
-            // Option 1 : Appel Ajax pour récupérer l'indice correspondant POUR FONCTINNAIRE
             fetch('{{ path("get_indice_by_corps_grade") }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
                 },
                 body: JSON.stringify({
                     codeCorps: codeCorps,
@@ -90,12 +84,37 @@
                 .then(r => r.json())
                 .then(data => {
                     if (data.success && data.indice) {
-                        selectIndice.value = data.indice;
+                        // Si c'est un <select>
+                        selectIndice.innerHTML = '';
+                        const option = document.createElement('option');
+                        option.value = data.indice;
+                        option.textContent = data.indice;
+                        option.selected = true;
+                        selectIndice.appendChild(option);
                     }
                 })
-                .catch(() => {
-                    // Option de secours : rien ou message silencieux
-                });
+                .catch(err => console.error('Erreur indice FONC :', err));
+        }
+
+        // ==================== Écouteurs ====================
+        if (selectCorps) {
+            selectCorps.addEventListener('change', function () {
+                syncHiddenFonc();
+                updateIndiceAuto();
+            });
+        }
+
+        if (selectGrade) {
+            selectGrade.addEventListener('change', function () {
+                syncHiddenFonc();
+                updateIndiceAuto();
+            });
+        }
+
+        // Chargement automatique si des valeurs sont déjà sélectionnées
+        if (selectCorps?.value && selectGrade?.value) {
+            syncHiddenFonc();
+            updateIndiceAuto();
         }
 
         // ==================== Recherche par Matricule ====================
