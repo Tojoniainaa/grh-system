@@ -18,10 +18,21 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/agents')]
 class AgentsController extends AbstractController
 {
-    #[Route('/', name: 'agents_index')]
-    public function index(): Response
+    #[Route('/', name: 'agents_index', methods: ['GET'])]
+    public function index(Request $request, AgentsRepository $agentsRepository): Response
     {
-        return $this->render('agents/index.html.twig');
+        $q = $request->query->get('q');
+
+        if ($q) {
+            $agents = $agentsRepository->search($q);
+        } else {
+            $agents = $agentsRepository->findBy([], ['nom' => 'ASC']);
+        }
+
+        return $this->render('agents/index.html.twig', [
+            'agents' => $agents,
+            'q' => $q,
+        ]);
     }
 
     #[Route('/ajout', name: 'agents_ajout', methods: ['GET', 'POST'])]
@@ -172,5 +183,91 @@ class AgentsController extends AbstractController
             'success' => true,
             'indice'  => $indiceEfa4->getIndice()
         ]);
+    }
+
+    #[Route('/{id}', name: 'app_agents_show', methods: ['GET'])]
+    public function show(Agents $agent): Response
+    {
+        return $this->render('agents/show.html.twig', [
+            'agent' => $agent,
+        ]);
+    }
+
+    #[Route('/{id}/edit', name: 'app_agents_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Agents $agent, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
+    {
+        $form = $this->createForm(AgentsType::class, $agent);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Gestion photo
+            $photoFile = $form->get('nomPhotos')->getData();
+            if ($photoFile) {
+                // Supprimer l'ancienne photo si elle existe
+                if ($agent->getNomPhotos()) {
+                    $oldFile = $this->getParameter('agents_photos_directory').'/'.$agent->getNomPhotos();
+                    if (file_exists($oldFile)) {
+                        unlink($oldFile);
+                    }
+                }
+                $originalFilename = pathinfo($photoFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$photoFile->guessExtension();
+                $photoFile->move($this->getParameter('agents_photos_directory'), $newFilename);
+                $agent->setNomPhotos($newFilename);
+            }
+
+            // Gestion PDF
+            $pdfFile = $form->get('nomPdf')->getData();
+            if ($pdfFile) {
+                if ($agent->getNomPdf()) {
+                    $oldFile = $this->getParameter('agents_pdf_directory').'/'.$agent->getNomPdf();
+                    if (file_exists($oldFile)) {
+                        unlink($oldFile);
+                    }
+                }
+                $originalFilename = pathinfo($pdfFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$pdfFile->guessExtension();
+                $pdfFile->move($this->getParameter('agents_pdf_directory'), $newFilename);
+                $agent->setNomPdf($newFilename);
+            }
+
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Agent modifié avec succès.');
+            return $this->redirectToRoute('agents_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('agents/edit.html.twig', [
+            'agent' => $agent,
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('/{id}', name: 'app_agents_delete', methods: ['POST'])]
+    public function delete(Request $request, Agents $agent, EntityManagerInterface $entityManager): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$agent->getId(), $request->request->get('_token'))) {
+            // Supprimer les fichiers
+            if ($agent->getNomPhotos()) {
+                $file = $this->getParameter('agents_photos_directory').'/'.$agent->getNomPhotos();
+                if (file_exists($file)) {
+                    unlink($file);
+                }
+            }
+            if ($agent->getNomPdf()) {
+                $file = $this->getParameter('agents_pdf_directory').'/'.$agent->getNomPdf();
+                if (file_exists($file)) {
+                    unlink($file);
+                }
+            }
+
+            $entityManager->remove($agent);
+            $entityManager->flush();
+            $this->addFlash('success', 'Agent supprimé avec succès.');
+        }
+
+        return $this->redirectToRoute('agents_index', [], Response::HTTP_SEE_OTHER);
     }
 }

@@ -1,0 +1,463 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Avancement — Situation Administrative{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        .page-header-avancement {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #1d4ed8 100%);
+            color: white;
+            padding: 1.5rem 0;
+            margin: -1.75rem -1.75rem 1.75rem;
+            padding-left: 1.75rem;
+            padding-right: 1.75rem;
+            box-shadow: 0 8px 25px rgba(15, 44, 89, 0.25);
+        }
+
+        .page-header-avancement h1 {
+            font-size: 1.45rem;
+            font-weight: 700;
+            margin: 0 0 0.2rem;
+        }
+
+        .page-header-avancement p {
+            margin: 0;
+            opacity: 0.85;
+            font-size: 0.95rem;
+        }
+
+        .modern-card {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px -5px rgba(15, 44, 89, 0.07);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header-modern {
+            background: linear-gradient(to right, #f8fafc, #f1f5f9);
+            border-bottom: 1px solid #e2e8f0;
+            padding: 1rem 1.35rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card-header-modern .icon-box {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .card-header-modern h5 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 1.05rem;
+            color: #0f172a;
+        }
+
+        .card-body-modern { padding: 1.35rem; }
+
+        .position-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);
+            border: 1px solid #dbeafe;
+            border-radius: 14px;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .position-photo {
+            width: 72px;
+            height: 72px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+
+        .position-name {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .info-badge {
+            display: inline-block;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.3rem 0.65rem;
+            font-size: 0.85rem;
+            margin: 0.15rem 0.25rem 0.15rem 0;
+        }
+
+        .info-badge strong {
+            color: #64748b;
+            font-weight: 500;
+            margin-right: 0.2rem;
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 1.5px solid #e2e8f0;
+            padding: 0.55rem 0.9rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        .btn-search {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border: none;
+            color: white;
+            border-radius: 10px;
+            padding: 0.55rem 1.2rem;
+            font-weight: 600;
+        }
+
+        .btn-search:hover { color: white; opacity: 0.95; }
+
+        .table thead th {
+            background: #f8fafc;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #475569;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0.85rem 1rem;
+            white-space: nowrap;
+        }
+
+        .table tbody td {
+            padding: 0.8rem 1rem;
+            vertical-align: middle;
+            font-size: 0.9rem;
+        }
+
+        .table tbody tr:hover { background: #f8fafc; }
+
+        .badge-matricule {
+            background: #dbeafe;
+            color: #1d4ed8;
+            font-weight: 600;
+            padding: 0.3rem 0.65rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+        }
+
+        .btn-action {
+            border-radius: 8px;
+            font-size: 0.8rem;
+            padding: 0.3rem 0.65rem;
+            margin: 0.1rem;
+            font-weight: 500;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #64748b;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+
+    <div class="page-header-avancement">
+        <h1><i class="bi bi-graph-up-arrow me-2"></i> Avancement — Situation Administrative</h1>
+        <p>Consultation et actions d’avancement des agents</p>
+    </div>
+
+    {# ===== RECHERCHE & FILTRE ===== #}
+    <div class="modern-card">
+        <div class="card-header-modern">
+            <div class="icon-box"><i class="bi bi-funnel"></i></div>
+            <div>
+                <h5>Recherche & Filtre</h5>
+                <small class="text-muted">Rechercher un agent ou filtrer par statut</small>
+            </div>
+        </div>
+        <div class="card-body-modern">
+            <form method="post" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label fw-medium">Statut</label>
+                    <select name="triage" class="form-select">
+                        <option value="">— Tous les statuts —</option>
+                        <option value="FONC" {{ triage == 'FONC' ? 'selected' : '' }}>Fonctionnaire</option>
+                        <option value="EFA"  {{ triage == 'EFA'  ? 'selected' : '' }}>EFA</option>
+                        <option value="ELD"  {{ triage == 'ELD'  ? 'selected' : '' }}>ELD</option>
+                        <option value="ECD"  {{ triage == 'ECD'  ? 'selected' : '' }}>ECD</option>
+                        <option value="HEE"  {{ triage == 'HEE'  ? 'selected' : '' }}>HEE</option>
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label fw-medium">Matricule</label>
+                    <input type="text" name="searchAdm" class="form-control"
+                           placeholder="Rechercher par matricule..."
+                           value="{{ searchAdm }}" id="searchAdm">
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-search">
+                        <i class="bi bi-search me-1"></i> Rechercher
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {# ===== CARTE POSITION ===== #}
+    {% if agent and situation %}
+        <div class="position-card">
+            <div class="d-flex flex-wrap align-items-start gap-3">
+                <img class="position-photo"
+                     src="{{ agent.nomPhotos ? asset('uploads/photos/' ~ agent.nomPhotos) : asset('images/user.png') }}"
+                     alt="Photo"
+                     onerror="this.src='{{ asset('images/user.png') }}'">
+
+                <div class="flex-grow-1">
+                    <div class="position-name">
+                        {{ agent.nom }} {{ agent.prenom }}
+                    </div>
+                    <div class="text-muted mb-2" style="font-size: 0.9rem;">
+                        IM : <strong>{{ agent.matricule }}</strong>
+                    </div>
+
+                    <div>
+                        <span class="info-badge"><strong>Statut</strong> {{ situation.statu }}</span>
+                        <span class="info-badge"><strong>Catégorie</strong> {{ situation.categorie }}</span>
+                        <span class="info-badge"><strong>Indice</strong> {{ situation.indice }}</span>
+
+                        {% if situation.statu == 'EFA' and situation.categorie <= 3 %}
+                            <span class="info-badge"><strong>Échelle</strong> {{ situation.echelle }}</span>
+                            <span class="info-badge"><strong>Échelon</strong> {{ situation.echelon }}</span>
+                        {% elseif situation.codeGrade %}
+                            <span class="info-badge"><strong>Grade</strong> {{ situation.codeGrade }}</span>
+                        {% endif %}
+
+                        {% if situation.codeCorps %}
+                            <span class="info-badge"><strong>Corps</strong> {{ situation.codeCorps }}</span>
+                        {% endif %}
+
+                        {% if situation.datePriseServ %}
+                            <span class="info-badge"><strong>Date prise service</strong> {{ situation.datePriseServ|date('d/m/Y') }}</span>
+                        {% elseif situation.dateEntre %}
+                            <span class="info-badge"><strong>Date entrée</strong> {{ situation.dateEntre|date('d/m/Y') }}</span>
+                        {% endif %}
+                    </div>
+
+{#                    {% if affectation %}#}
+{#                        <div class="mt-2">#}
+{#                            <span class="info-badge"><strong>Service</strong> </span>#}
+{#                            <span class="info-badge"><strong>Fonction</strong> </span>#}
+{#                            <span class="info-badge"><strong>Début</strong> </span>#}
+{#                            <span class="info-badge"><strong>Fin</strong> </span>#}
+{#                        </div>#}
+{#                    {% endif %}#}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {# ===== LISTE ===== #}
+    <div class="modern-card">
+        <div class="card-header-modern">
+            <div class="icon-box" style="background: linear-gradient(135deg, #059669, #10b981);">
+                <i class="bi bi-table"></i>
+            </div>
+            <div>
+                <h5>Liste des situations administratives</h5>
+                <small class="text-muted">
+                    {% if triage %}
+                        Filtre : <strong>{{ triage }}</strong>
+                    {% else %}
+                        Sélectionnez un statut pour afficher la liste
+                    {% endif %}
+                </small>
+            </div>
+        </div>
+
+        <div class="card-body-modern p-0">
+            <div class="table-responsive">
+                {% if triage == '' %}
+                    <div class="empty-state">
+                        <i class="bi bi-funnel fs-2 d-block mb-2"></i>
+                        Sélectionnez un <strong>statut</strong> dans le filtre pour afficher la liste
+                    </div>
+                {% elseif liste is empty %}
+                    <div class="empty-state">
+                        <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                        Aucun enregistrement pour le statut <strong>{{ triage }}</strong>
+                    </div>
+                {% else %}
+                    <table class="table table-hover mb-0">
+                        <thead>
+                        <tr>
+                            <th style="width:40px"></th>
+                            <th>Matricule</th>
+
+                            {% if triage == 'FONC' or (triage == 'EFA') %}
+                                <th>Grade / Échelle</th>
+                                <th>Corps</th>
+                            {% elseif triage == 'ELD' %}
+                                <th>Majoration</th>
+                                <th>Indice CT</th>
+                                <th>Corps</th>
+                            {% else %}
+                                <th>Corps</th>
+                                <th>Date effet</th>
+                            {% endif %}
+
+                            <th class="text-end">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for s in liste %}
+                            <tr>
+                                <td><input type="checkbox" class="form-check-input"></td>
+                                <td><span class="badge-matricule">{{ s.matricule }}</span></td>
+
+                                {% if triage == 'FONC' %}
+                                    <td>{{ s.codeGrade ?? '—' }}</td>
+                                    <td>{{ s.codeCorps ?? '—' }}</td>
+                                {% elseif triage == 'EFA' %}
+                                    {% if s.categorie is defined and s.categorie <= 3 %}
+                                        <td>{{ s.echelle }} / {{ s.echelon }}</td>
+                                    {% else %}
+                                        <td>{{ s.codeGrade ?? '—' }}</td>
+                                    {% endif %}
+                                    <td>{{ s.codeCorps ?? '—' }}</td>
+                                {% elseif triage == 'ELD' %}
+                                    <td>{{ s.majoration ?? '—' }}%</td>
+                                    <td>{{ s.indiceCt ?? '—' }}</td>
+                                    <td>{{ s.codeCorps ?? '—' }}</td>
+                                {% else %}
+                                    <td>{{ s.codeCorps ?? '—' }}</td>
+                                    <td>{{ s.dateEffet ? s.dateEffet|date('d/m/Y') : '—' }}</td>
+                                {% endif %}
+
+                                <td class="text-end text-nowrap">
+                                    {% if triage == 'FONC' %}
+                                        <button type="button" class="btn btn-sm btn-outline-primary btn-action btn-avancement-fonc" data-matricule="{{ s.matricule }}" data-bs-toggle="modal" data-bs-target="#modalAvancementFonc">Avancement</button>
+                                        <a href=""
+                                           class="btn btn-sm btn-outline-info btn-action" target="_blank">Corps</a>
+                                        <a href=""
+                                           class="btn btn-sm btn-outline-dark btn-action" target="_blank">Historique</a>
+
+                                    {% elseif triage == 'EFA' %}
+                                        <a href=""
+                                           class="btn btn-sm btn-outline-primary btn-action" target="_blank">Avancement</a>
+                                        <a href=""
+                                           class="btn btn-sm btn-outline-info btn-action" target="_blank">Corps</a>
+                                        <a href=""
+                                           class="btn btn-sm btn-outline-dark btn-action" target="_blank">Historique</a>
+
+                                    {% elseif triage == 'ELD' %}
+                                        <a href=""
+                                           class="btn btn-sm btn-outline-primary btn-action" target="_blank">Avancement</a>
+                                        <a href=""
+                                           class="btn btn-sm btn-outline-info btn-action" target="_blank">Corps</a>
+                                        <a href=""
+                                           class="btn btn-sm btn-outline-dark btn-action" target="_blank">Historique</a>
+
+                                    {% else %}
+                                        <a href=""
+                                           class="btn btn-sm btn-outline-primary btn-action" target="_blank">Avancement</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {# ===================== MODAL AVANCEMENT FONCTIONNAIRE ===================== #}
+    <div class="modal fade" id="modalAvancementFonc" tabindex="-1" aria-labelledby="modalAvancementFoncLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
+
+                {# Header #}
+                <div class="modal-header text-white" style="background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #1d4ed8 100%);">
+                    <div>
+                        <h5 class="modal-title fw-bold mb-0" id="modalAvancementFoncLabel">
+                            <i class="bi bi-graph-up-arrow me-2"></i> Avancement Grade / Indice
+                        </h5>
+                        <small class="opacity-75">Fonctionnaire</small>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                </div>
+
+                {# Body (chargé en AJAX) #}
+                <div class="modal-body p-0" id="modalAvancementFoncBody">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <p class="mt-3 text-muted">Chargement...</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        document.getElementById('searchAdm')?.focus();
+
+
+            document.addEventListener('DOMContentLoaded', function () {
+            const modalEl   = document.getElementById('modalAvancementFonc');
+            const modalBody = document.getElementById('modalAvancementFoncBody');
+
+            document.querySelectorAll('.btn-avancement-fonc').forEach(btn => {
+            btn.addEventListener('click', function () {
+            const matricule = this.dataset.matricule;
+
+            modalBody.innerHTML = `
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-3 text-muted">Chargement de l'agent ${matricule}...</p>
+                </div>
+            `;
+
+            // Utilise l’URL générée par Symfony (plus sûr)
+            fetch(`{{ path('avancement_fonc_modal', {matricule: '__MAT__'}) }}`.replace('__MAT__', matricule))
+            .then(response => {
+            if (!response.ok) throw new Error('Erreur');
+            return response.text();
+        })
+            .then(html => {
+            modalBody.innerHTML = html;
+        })
+            .catch(() => {
+            modalBody.innerHTML = `
+                        <div class="alert alert-danger m-4">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            Impossible de charger les informations de l'agent.
+                        </div>
+                    `;
+        });
+        });
+        });
+
+            modalEl.addEventListener('hidden.bs.modal', function () {
+            modalBody.innerHTML = `
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-3 text-muted">Chargement...</p>
+            </div>
+        `;
+        });
+        });
+
+    </script>
+{% endblock %}

@@ -60,4 +60,14 @@ class AgentsRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    public function search(string $q): array
+    {
+        return $this->createQueryBuilder('a')
+            ->where('a.nom LIKE :q OR a.prenom LIKE :q OR a.matricule LIKE :q OR a.contact LIKE :q OR a.cin LIKE :q')
+            ->setParameter('q', '%'.$q.'%')
+            ->orderBy('a.nom', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\Gradefon;
 use App\Entity\SituationAdm;
+use App\Entity\Statusfon;
 use App\Repository\AgentsRepository;
 use App\Repository\BudgetRepository;
 use App\Repository\CorpsefaRepository;
@@ -254,6 +256,80 @@ class SituationAdministrativeController extends AbstractController
         return $this->json([
             'success' => true,
             'agents'  => $data,
+        ]);
+    }
+
+    #[Route('/avancement', name: 'avancement_index', methods: ['GET', 'POST'])]
+    public function avancement(
+        Request $request,
+        EntityManagerInterface $em,
+        AgentsRepository $agentRepo,
+        SituationAdmRepository $situationRepo
+    ): Response {
+        $triage    = $request->request->get('triage') ?? $request->query->get('triage', '');
+        $searchAdm = trim($request->request->get('searchAdm') ?? $request->query->get('searchAdm', ''));
+
+        $agent     = null;
+        $situation = null;
+        $liste     = [];
+
+        // Carte POSITION (quand on cherche un matricule précis)
+        if ($searchAdm !== '') {
+            $agent = $agentRepo->findOneBy(['matricule' => $searchAdm]);
+            if ($agent) {
+                $situation = $situationRepo->findOneBy(['matricule' => $searchAdm]);
+            }
+        }
+
+        // Liste du tableau
+        if ($triage !== '') {
+            if ($searchAdm !== '') {
+                // → On filtre par statut + matricule exact
+                $liste = $situationRepo->findByStatutAndMatricule($triage, $searchAdm);
+            } else {
+                // → On affiche tout le statut
+                $liste = $situationRepo->findByStatutWithAgent($triage);
+            }
+        }
+
+        return $this->render('agents/liste.html.twig', [
+            'triage'    => $triage,
+            'searchAdm' => $searchAdm,
+            'agent'     => $agent,
+            'situation' => $situation,
+            'liste'     => $liste,
+        ]);
+    }
+
+    #[Route('/avancement/fonc-modal/{matricule}', name: 'avancement_fonc_modal', methods: ['GET'])]
+    public function avancementFoncModal(
+        string $matricule,
+        AgentsRepository $agentRepo,
+        SituationAdmRepository $situationRepo,
+        EntityManagerInterface $em
+    ): Response {
+        $agent = $agentRepo->findOneBy(['matricule' => $matricule]);
+        if (!$agent) {
+            return new Response('<div class="alert alert-danger m-4">Agent introuvable</div>', 404);
+        }
+
+        $situation = $situationRepo->findOneBy(['matricule' => $matricule]);
+        if (!$situation) {
+            return new Response('<div class="alert alert-danger m-4">Situation administrative introuvable</div>', 404);
+        }
+
+        // Grades
+        $grades = $em->getRepository(GradeFon::class)->findAll();
+
+        // Indices → change Statusfon par le vrai nom de ton entité Indice
+        // Exemple : Indice::class ou Statusfon si c’est vraiment cette table
+        $indices = $em->getRepository(Statusfon::class)->findAll();
+
+        return $this->render('avancement/_fonc_modal_content.html.twig', [
+            'agent'     => $agent,
+            'situation' => $situation,
+            'grades'    => $grades,
+            'indices'   => $indices,
         ]);
     }
 }

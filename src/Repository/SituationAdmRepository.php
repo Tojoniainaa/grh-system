@@ -42,16 +42,31 @@ class SituationAdmRepository extends ServiceEntityRepository
     //    }
 
     // Si tu veux réutiliser l'ancienne fonction liste_tout_SituationAdm
-    public function findAllWithSearch(?string $search = null)
+
+    public function findByStatutWithAgent(string $statut): array
     {
-        $qb = $this->createQueryBuilder('s');
+        // On garde uniquement la situation la plus récente de chaque matricule
+        $subQuery = $this->createQueryBuilder('s2')
+            ->select('MAX(s2.id)')
+            ->where('s2.statu = :statut')
+            ->groupBy('s2.matricule')
+            ->getDQL();
 
-        if ($search) {
-            $qb->where('s.matricule LIKE :search')
-                ->setParameter('search', '%'.$search.'%');
-        }
-
-        return $qb->orderBy('s.matricule', 'ASC')
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.statu = :statut')
+            ->andWhere('s.id IN ('.$subQuery.')')
+            ->setParameter('statut', $statut)
+            ->orderBy('s.matricule', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+    public function findByStatutAndMatricule(string $statut, string $matricule): array
+    {
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.statu = :statut')
+            ->andWhere('s.matricule = :matricule')
+            ->setParameter('statut', $statut)
+            ->setParameter('matricule', $matricule)
             ->getQuery()
             ->getResult();
     }
