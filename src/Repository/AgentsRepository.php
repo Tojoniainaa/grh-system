@@ -40,4 +40,24 @@ class AgentsRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+    public function findAgentsSansSituationAdministrative(): array
+    {
+        // Version simple avec sous-requête
+        $qb = $this->createQueryBuilder('a');
+
+        $qb->where(
+            $qb->expr()->notIn(
+                'a.matricule',
+                $this->getEntityManager()
+                    ->createQueryBuilder()
+                    ->select('s.matricule')
+                    ->from('App\Entity\SituationAdm', 's')
+                    ->getDQL()
+            )
+        )
+            ->orderBy('a.nom', 'ASC')
+            ->addOrderBy('a.prenom', 'ASC');
+
+        return $qb->getQuery()->getResult();
+    }
 }

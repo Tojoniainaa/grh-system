@@ -253,8 +253,23 @@
                 left: 0;
             }
         }
-        #chevronFiche {
-            transition: transform 0.25s ease;
+        /* Force l'affichage des liens de la sidebar */
+        .app-sidebar .nav-item {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            height: auto !important;
+            max-height: none !important;
+            overflow: visible !important;
+        }
+
+        .app-sidebar a.nav-item {
+            color: #cbd5e1 !important;
+        }
+
+        .app-sidebar a.nav-item.active {
+            background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+            color: white !important;
         }
     </style>
 
@@ -316,42 +331,30 @@
             <div class="sidebar-section">
                 <div class="sidebar-title">Fiche Individuelle</div>
 
-                <!-- Bouton principal -->
-                <a href="javascript:void(0)" class="nav-item" id="btnFiche">
-                    <i class="bi bi-folder2-open"></i>
-                    <span>Fiche Individuelle</span>
-                    <i class="bi bi-chevron-down chevron ms-auto" id="chevronFiche"></i>
+                <a href="{{ path('agents_ajout') }}" class="nav-item">
+                    <i class="bi bi-person-vcard"></i>
+                    <span>État civil</span>
                 </a>
 
-                <!-- Sous-menu (caché/affiché par JS) -->
-                <div id="submenuFiche" style="display: block;">
-                    <div class="submenu">
-                        <a href="{{ path('agents_ajout') }}" class="nav-item">
-                            <i class="bi bi-person-vcard"></i>
-                            <span>État civil</span>
-                        </a>
+                <a href="{{ path('situation_administrative_index') }}" class="nav-item active">
+                    <i class="bi bi-briefcase"></i>
+                    <span>Situation Administrative</span>
+                </a>
 
-                        <a href="{{ path('situation_administrative_index') }}" class="nav-item active">
-                            <i class="bi bi-briefcase"></i>
-                            <span>Situation Administrative</span>
-                        </a>
+                <a href="#" class="nav-item">
+                    <i class="bi bi-people"></i>
+                    <span>Situation familiale</span>
+                </a>
 
-                        <a href="#" class="nav-item">
-                            <i class="bi bi-people"></i>
-                            <span>Situation familiale</span>
-                        </a>
+                <a href="#" class="nav-item">
+                    <i class="bi bi-award"></i>
+                    <span>Diplômes</span>
+                </a>
 
-                        <a href="#" class="nav-item">
-                            <i class="bi bi-award"></i>
-                            <span>Diplômes</span>
-                        </a>
-
-                        <a href="#" class="nav-item">
-                            <i class="bi bi-emoji-smile"></i>
-                            <span>Enfants</span>
-                        </a>
-                    </div>
-                </div>
+                <a href="#" class="nav-item">
+                    <i class="bi bi-emoji-smile"></i>
+                    <span>Enfants</span>
+                </a>
             </div>
 
             <div class="sidebar-section mt-auto mb-3">
@@ -385,25 +388,7 @@
 
 {% block javascripts %}
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const btn = document.getElementById('btnFiche');
-            const submenu = document.getElementById('submenuFiche');
-            const chevron = document.getElementById('chevronFiche');
 
-            if (btn && submenu) {
-            btn.addEventListener('click', function (e) {
-            e.preventDefault();
-
-            if (submenu.style.display === 'none' || submenu.style.display === '') {
-            submenu.style.display = 'block';
-            chevron.style.transform = 'rotate(180deg)';
-        } else {
-            submenu.style.display = 'none';
-            chevron.style.transform = 'rotate(0deg)';
-        }
-        });
-        }
-        });
     </script>
 
 {% endblock %}

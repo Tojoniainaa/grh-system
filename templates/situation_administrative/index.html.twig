@@ -399,8 +399,14 @@
                                         <i class="bi bi-person-badge me-1 text-primary"></i>
                                         Matricule <span class="text-danger">*</span>
                                     </label>
-                                    <input type="text" name="Matricule" class="form-control"
-                                           placeholder="Ex : 123456" required>
+                                    <div class="input-group">
+                                        <input type="text" name="Matricule" id="input_matricule"
+                                               class="form-control" placeholder="Ex : 123456" required>
+                                        <button type="button" class="btn btn-outline-primary" id="btn_liste_sans_sa"
+                                                title="Voir les agents sans Situation Administrative">
+                                            <i class="bi bi-list-ul"></i>
+                                        </button>
+                                    </div>
                                 </div>
 
                                 <div class="col-md-4">
@@ -506,7 +512,208 @@
 
         </div>
     </div>
+    <!-- Modal : Agents sans Situation Administrative -->
+    <!-- Modal : Agents sans Situation Administrative -->
+    <div class="modal fade" id="modalAgentsSansSA" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow" style="border-radius: 16px;">
+                <div class="modal-header border-0 pb-2">
+                    <h5 class="modal-title fw-bold">
+                        <i class="bi bi-person-x text-warning me-2"></i>
+                        Agents sans Situation Administrative
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body pt-0">
+                    <!-- Barre de recherche -->
+                    <div class="input-group mb-3">
+                    <span class="input-group-text bg-white">
+                        <i class="bi bi-search"></i>
+                    </span>
+                        <input type="text"
+                               id="search_agents_sans_sa"
+                               class="form-control"
+                               placeholder="Rechercher par matricule, nom, prénom ou date de naissance (jj/mm/aaaa)...">
+                    </div>
+
+                    <p class="text-muted small mb-2">
+                        Cliquez sur <strong>Sélectionner</strong> pour remplir le matricule.
+                        Vous pouvez aussi fermer et continuer la saisie normalement.
+                    </p>
+
+                    <div class="table-responsive" style="max-height: 380px;">
+                        <table class="table table-hover table-sm align-middle mb-0">
+                            <thead class="table-light sticky-top">
+                            <tr>
+                                <th>Matricule</th>
+                                <th>Nom & Prénom</th>
+                                <th>Sexe</th>
+                                <th>Date naissance</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody id="tbody_agents_sans_sa">
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">
+                                    <i class="bi bi-hourglass-split"></i> Chargement...
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="border-radius: 10px;">
+                        Fermer et continuer la saisie
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block javascripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const btnListe       = document.getElementById('btn_liste_sans_sa');
+        const modalEl        = document.getElementById('modalAgentsSansSA');
+        const tbody          = document.getElementById('tbody_agents_sans_sa');
+        const inputMatricule = document.getElementById('input_matricule');
+        const searchInput    = document.getElementById('search_agents_sans_sa');
+
+        if (!btnListe || !modalEl || !tbody) {
+            console.error('Éléments du modal introuvables');
+            return;
+        }
+
+        const modal = new bootstrap.Modal(modalEl);
+        let allAgents = [];
+
+        // ===== Afficher les agents dans le tableau =====
+        function renderAgents(agents) {
+            if (!agents || agents.length === 0) {
+                tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="text-center text-muted py-4">
+                        Aucun agent trouvé
+                    </td>
+                </tr>`;
+                return;
+            }
+
+            let html = '';
+            agents.forEach(function (agent) {
+                html += `
+                <tr>
+                    <td>
+                        <span class="badge bg-primary-subtle text-primary">
+                            ${agent.matricule || '—'}
+                        </span>
+                    </td>
+                    <td class="fw-semibold">${agent.nom || ''} ${agent.prenom || ''}</td>
+                    <td>${agent.sexe || '—'}</td>
+                    <td>${agent.dateNaissance || '—'}</td>
+                    <td class="text-end">
+                        <button type="button"
+                                class="btn btn-sm btn-outline-primary btn-select-matricule"
+                                data-matricule="${agent.matricule}">
+                            Sélectionner
+                        </button>
+                    </td>
+                </tr>`;
+            });
+
+            tbody.innerHTML = html;
+
+            // Boutons "Sélectionner"
+            document.querySelectorAll('.btn-select-matricule').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    const mat = this.getAttribute('data-matricule');
+                    if (inputMatricule) {
+                        inputMatricule.value = mat;
+                        inputMatricule.focus();
+                    }
+                    modal.hide();
+                });
+            });
+        }
+
+        // ===== Ouvrir le modal + charger la liste =====
+        btnListe.addEventListener('click', function () {
+            // Réinitialiser
+            if (searchInput) searchInput.value = '';
+            allAgents = [];
+
+            tbody.innerHTML = `
+            <tr>
+                <td colspan="5" class="text-center text-muted py-4">
+                    <i class="bi bi-hourglass-split"></i> Chargement en cours...
+                </td>
+            </tr>`;
+
+            modal.show();
+
+            fetch('{{ path('api_agents_sans_situation') }}')
+                .then(function (response) {
+                    if (!response.ok) {
+                        throw new Error('Erreur HTTP ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(function (data) {
+                    console.log('Réponse API :', data); // pour debug
+
+                    if (data.success && Array.isArray(data.agents)) {
+                        allAgents = data.agents;
+                        renderAgents(allAgents);
+                    } else {
+                        tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                Aucun agent sans Situation Administrative
+                            </td>
+                        </tr>`;
+                    }
+                })
+                .catch(function (error) {
+                    console.error('Erreur fetch :', error);
+                    tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center text-danger py-4">
+                            Erreur lors du chargement de la liste
+                        </td>
+                    </tr>`;
+                });
+        });
+
+        // ===== Recherche en temps réel =====
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                const term = this.value.trim().toLowerCase();
+
+                if (term === '') {
+                    renderAgents(allAgents);
+                    return;
+                }
+
+                const filtered = allAgents.filter(function (agent) {
+                    const matricule = (agent.matricule || '').toString().toLowerCase();
+                    const nom       = (agent.nom || '').toLowerCase();
+                    const prenom    = (agent.prenom || '').toLowerCase();
+                    const dateNais  = (agent.dateNaissance || '').toLowerCase();
+
+                    return matricule.includes(term)
+                        || nom.includes(term)
+                        || prenom.includes(term)
+                        || dateNais.includes(term);
+                });
+
+                renderAgents(filtered);
+            });
+        }
+    });
+</script>
 {% endblock %}

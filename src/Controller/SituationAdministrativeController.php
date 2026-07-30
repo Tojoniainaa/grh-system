@@ -235,4 +235,25 @@ class SituationAdministrativeController extends AbstractController
             ]
         ]);
     }
+    #[Route('/api/agents-sans-situation', name: 'api_agents_sans_situation', methods: ['GET'])]
+    public function apiAgentsSansSituation(AgentsRepository $agentRepo): JsonResponse
+    {
+        $agents = $agentRepo->findAgentsSansSituationAdministrative();
+
+        $data = [];
+        foreach ($agents as $agent) {
+            $data[] = [
+                'matricule'     => $agent->getMatricule(),
+                'nom'           => $agent->getNom(),
+                'prenom'        => $agent->getPrenom(),
+                'sexe'          => $agent->getSexe(),
+                'dateNaissance' => $agent->getDateNaissance()?->format('d/m/Y'),
+            ];
+        }
+
+        return $this->json([
+            'success' => true,
+            'agents'  => $data,
+        ]);
+    }
 }
