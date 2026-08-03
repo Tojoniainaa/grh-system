@@ -336,4 +336,32 @@ class SituationAdministrativeController extends AbstractController
             'indices'   => $indices,
         ]);
     }
+
+    #[Route('/avancement/corps-modal/{matricule}', name: 'avancement_corps_modal', methods: ['GET'])]
+    public function avancementCorpsModal(
+        string $matricule,
+        AgentsRepository $agentRepo,
+        SituationAdmRepository $situationRepo,
+        EntityManagerInterface $em
+    ): Response {
+        $agent = $agentRepo->findOneBy(['matricule' => $matricule]);
+        if (!$agent) {
+            return new Response('<div class="alert alert-danger m-4">Agent introuvable</div>', 404);
+        }
+
+        $situation = $situationRepo->findOneBy(['matricule' => $matricule]);
+        if (!$situation) {
+            return new Response('<div class="alert alert-danger m-4">Situation administrative introuvable</div>', 404);
+        }
+
+        $corpsList = $em->getRepository(Corpsfon::class)->findAll();
+        $indices   = $em->getRepository(Statusfon::class)->findAll(); // garde le même que pour le grade
+
+        return $this->render('avancement/_corps_modal_content.html.twig', [
+            'agent'     => $agent,
+            'situation' => $situation,
+            'corpsList' => $corpsList,
+            'indices'   => $indices,
+        ]);
+    }
 }

@@ -21,17 +21,18 @@ class AgentsController extends AbstractController
     #[Route('/', name: 'agents_index', methods: ['GET'])]
     public function index(Request $request, AgentsRepository $agentsRepository): Response
     {
-        $q = $request->query->get('q');
+        $q     = $request->query->get('q');
+        $page  = $request->query->getInt('page', 1);
+        $limit = 10; // agents par page
 
-        if ($q) {
-            $agents = $agentsRepository->search($q);
-        } else {
-            $agents = $agentsRepository->findBy([], ['nom' => 'ASC']);
-        }
+        $paginator = $agentsRepository->findPaginated($page, $limit, $q);
 
         return $this->render('agents/index.html.twig', [
-            'agents' => $agents,
-            'q' => $q,
+            'agents'      => $paginator,
+            'q'           => $q,
+            'currentPage' => $page,
+            'totalPages'  => (int) ceil($paginator->count() / $limit),
+            'totalAgents' => $paginator->count(),
         ]);
     }
 

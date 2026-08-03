@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Agents;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -69,5 +70,22 @@ class AgentsRepository extends ServiceEntityRepository
             ->orderBy('a.nom', 'ASC')
             ->getQuery()
             ->getResult();
+    }
+
+    public function findPaginated(int $page = 1, int $limit = 10, ?string $q = null): Paginator
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->orderBy('a.nom', 'ASC')
+            ->addOrderBy('a.prenom', 'ASC');
+
+        if ($q) {
+            $qb->andWhere('a.nom LIKE :q OR a.prenom LIKE :q OR a.matricule LIKE :q OR a.cin LIKE :q')
+                ->setParameter('q', '%' . $q . '%');
+        }
+
+        $qb->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit);
+
+        return new Paginator($qb);
     }
 }

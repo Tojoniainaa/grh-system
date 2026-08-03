@@ -1,0 +1,118 @@
+{# ===== POSITION DE L'AGENT ===== #}
+<div class="p-4" style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-bottom: 1px solid #bae6fd;">
+    <div class="d-flex align-items-center gap-3">
+        <div>
+            {% if agent.nomPhotos %}
+                <img src="{{ asset('uploads/photos/' ~ agent.nomPhotos) }}"
+                     style="width:64px;height:64px;object-fit:cover;border-radius:50%;border:3px solid #fff;box-shadow:0 4px 12px rgba(0,0,0,.12);"
+                     alt="Photo">
+            {% else %}
+                <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#0284c7);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.1rem;">
+                    {{ agent.nom|first|upper }}{{ agent.prenom|first|upper }}
+                </div>
+            {% endif %}
+        </div>
+        <div>
+            <div class="fw-bold fs-5 mb-1">{{ agent.nom }} {{ agent.prenom }}</div>
+            <div class="text-muted small">
+                <span class="me-3"><strong>IM :</strong> {{ agent.matricule }}</span>
+                <span class="me-3"><strong>Statut :</strong> {{ situation.statu }}</span>
+            </div>
+            <div class="text-muted small mt-1">
+                <span class="me-3"><strong>Corps :</strong> {{ situation.codeCorps ?? '—' }}</span>
+                <span class="me-3"><strong>Catégorie :</strong> {{ situation.categorie ?? '—' }}</span>
+                <span class="me-3"><strong>Indice :</strong> {{ situation.indice ?? '—' }}</span>
+                <span><strong>Grade :</strong> {{ situation.codeGrade ?? '—' }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# ===== FORMULAIRE ===== #}
+<form method="post" class="p-4">
+    <div class="row g-3">
+
+        {# Nouveau Corps (+ catégorie liée) #}
+        <div class="col-md-8">
+            <label class="form-label fw-medium">Nouveau Corps <span class="text-danger">*</span></label>
+            <select name="code_corps" id="selectCorps" class="form-select" required>
+                <option value="">— Sélectionner un corps —</option>
+                {% for corps in corpsList %}
+                    <option value="{{ corps.codeCorps }}"
+                            data-categorie="{{ corps.categorie }}"
+                        {{ situation.codeCorps == corps.codeCorps ? 'selected' : '' }}>
+                        {{ corps.libelleCorps }} ({{ corps.codeCorps }})
+                        {% if corps.categorie %} — Cat. {{ corps.categorie }}{% endif %}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        {# Catégorie (remplie automatiquement) #}
+        <div class="col-md-4">
+            <label class="form-label fw-medium">Catégorie</label>
+            <input type="text"
+                   name="categorie"
+                   id="inputCategorie"
+                   class="form-control"
+                   readonly
+                   value="{{ situation.categorie ?? '' }}"
+                   placeholder="Auto">
+        </div>
+
+        {# Nouvel Indice #}
+        <div class="col-md-6">
+            <label class="form-label fw-medium">Nouvel Indice <span class="text-danger">*</span></label>
+            <select name="indice" class="form-select" required>
+                <option value="">— Sélectionner un indice —</option>
+                {% for indice in indices %}
+                    <option value="{{ indice.indice }}"
+                        {{ situation.indice == indice.indice ? 'selected' : '' }}>
+                        {{ indice.indice }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        {# Date Décision #}
+        <div class="col-md-3">
+            <label class="form-label fw-medium">Date Décision</label>
+            <input type="date" name="date_texte" class="form-control"
+                   value="{{ situation.dateTexte ? situation.dateTexte|date('Y-m-d') : '' }}">
+        </div>
+
+        {# Référence #}
+        <div class="col-md-3">
+            <label class="form-label fw-medium">Réf. Notification</label>
+            <input type="text" name="ref_notification" class="form-control"
+                   value="{{ situation.refNotification ?? '' }}"
+                   placeholder="Référence...">
+        </div>
+
+        {# Date d'Effet #}
+        <div class="col-md-6">
+            <label class="form-label fw-medium">Date d'Effet <span class="text-danger">*</span></label>
+            <input type="date" name="date_effet" class="form-control" required
+                   value="{{ situation.dateEffet ? situation.dateEffet|date('Y-m-d') : '' }}">
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+        <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">
+            Annuler
+        </button>
+        <button type="submit" class="btn btn-primary px-4"
+                style="background:linear-gradient(135deg,#0ea5e9,#0284c7);border:none;">
+            <i class="bi bi-check-lg me-1"></i> Valider l'avancement de corps
+        </button>
+    </div>
+</form>
+
+<script>
+    // Remplit automatiquement la catégorie quand on change de corps
+    document.getElementById('selectCorps')?.addEventListener('change', function () {
+        const selected = this.options[this.selectedIndex];
+        const categorie = selected.getAttribute('data-categorie') || '';
+        document.getElementById('inputCategorie').value = categorie;
+    });
+</script>
