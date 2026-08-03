@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Corpsfon;
 use App\Entity\Gradefon;
 use App\Entity\SituationAdm;
 use App\Entity\Statusfon;
@@ -110,7 +111,10 @@ class SituationAdministrativeController extends AbstractController
             if ($status === 'FONC') {
                 // Code Corps (champ caché name="Code_Corps")
                 if (!empty($data['Code_Corps'])) {
-                    $situation->setCodeCorps($data['Code_Corps']);
+                    $corps = $em->getRepository(Corpsfon::class)->find($data['Code_Corps']);
+                    if ($corps) {
+                        $situation->setCodeCorps($corps);
+                    }
                 }
                 // Code Grade (champ caché name="Code_Gradefonc")
                 if (!empty($data['Code_Gradefonc'])) {

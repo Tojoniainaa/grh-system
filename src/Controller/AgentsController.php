@@ -40,36 +40,49 @@ class AgentsController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager
     ): Response {
-
         $agent = new Agents();
-
         $form = $this->createForm(AgentsType::class, $agent);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            // ======================
-            // PHOTO
-            // ======================
-            $photoFile = $form->get('nomPhotos')->getData();
+            // Vérification matricule unique
+            $existing = $entityManager->getRepository(Agents::class)
+                ->findOneBy(['matricule' => $agent->getMatricule()]);
 
-            if ($photoFile) {
-                $newPhotoName = uniqid() . '.' . $photoFile->guessExtension();
-
-                $photoFile->move(
-                    $this->getParameter('kernel.project_dir') . '/public/uploads/photos',
-                    $newPhotoName
-                );
-
-                $agent->setNomPhotos($newPhotoName); // champ dans l'entité
+            if ($existing) {
+                $this->addFlash('danger', 'Ce matricule existe déjà.');
+                return $this->render('agents/new.html.twig', [
+                    'form' => $form->createView(),
+                ]);
             }
 
+            $projectDir = $this->getParameter('kernel.project_dir');
+
+            // ========== PHOTO ==========
+            $photoFile = $form->get('nomPhotos')->getData();
+            if ($photoFile) {
+                $newPhotoName = uniqid('photo_') . '.' . $photoFile->guessExtension();
+                $photoFile->move($projectDir . '/public/uploads/photos', $newPhotoName);
+
+                $agent->setNomPhotos($newPhotoName);
+                $agent->setFichesUrlPhotos('/uploads/photos/' . $newPhotoName);
+            }
+
+            // ========== PDF ==========
+            $pdfFile = $form->get('nomPdf')->getData();
+            if ($pdfFile) {
+                $newPdfName = uniqid('doc_') . '.' . $pdfFile->guessExtension();
+                $pdfFile->move($projectDir . '/public/uploads/pdfs', $newPdfName);
+
+                $agent->setNomPdf($newPdfName);
+                $agent->setFichesUrlPdf('/uploads/pdfs/' . $newPdfName);
+            }
 
             $entityManager->persist($agent);
             $entityManager->flush();
 
             $this->addFlash('success', 'Agent ajouté avec succès.');
-
             return $this->redirectToRoute('agents_index');
         }
 

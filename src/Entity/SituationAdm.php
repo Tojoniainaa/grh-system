@@ -30,9 +30,9 @@ class SituationAdm
 
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $codeGrade = null;
-
-    #[ORM\Column(length: 25, nullable: true)]
-    private ?string $codeCorps = null;
+    #[ORM\ManyToOne(targetEntity: Corpsfon::class)]
+    #[ORM\JoinColumn(name: "Code_Corps", referencedColumnName: "Code_Corps")]
+    private ?Corpsfon $codeCorps = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $categorie = null;
@@ -87,6 +87,7 @@ class SituationAdm
 
     #[ORM\Column(nullable: true)]
     private ?int $majoration = null;
+
 
     // ==================== GETTERS & SETTERS ====================
 
@@ -151,12 +152,12 @@ class SituationAdm
         return $this;
     }
 
-    public function getCodeCorps(): ?string
+    public function getCodeCorps(): ?Corpsfon
     {
         return $this->codeCorps;
     }
 
-    public function setCodeCorps(string $codeCorps): self
+    public function setCodeCorps(?Corpsfon $codeCorps): static
     {
         $this->codeCorps = $codeCorps;
         return $this;

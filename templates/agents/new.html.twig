@@ -67,8 +67,8 @@
             font-size: 0.95rem;
             font-weight: 600;
             color: #1e40af;
-            margin-bottom: 1.25rem;
-            padding-bottom: 0.6rem;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.3rem;
             border-bottom: 2px solid #dbeafe;
         }
 
@@ -150,7 +150,7 @@
         }
 
         .collapse-body {
-            padding-top: 1rem;
+            padding-top: 0.5rem;
         }
 
         /* Form controls */
@@ -211,7 +211,7 @@
         .form-divider {
             height: 1px;
             background: linear-gradient(to right, transparent, #e2e8f0, transparent);
-            margin: 1.75rem 0;
+            margin: 0.5rem 0;
         }
     </style>
 {% endblock %}
@@ -268,6 +268,12 @@
                         </div>
                         <div class="col-md-6">
                             {{ form_row(form.lieuNaissance) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.adresseEmail) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.age) }}
                         </div>
                         <div class="col-md-12">
                             {{ form_row(form.adresse) }}

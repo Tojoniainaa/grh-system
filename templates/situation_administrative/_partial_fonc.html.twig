@@ -1,18 +1,17 @@
 {# templates/situation_administrative/_partial_fonc.html.twig #}
+{% block stylesheets %}
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+{% endblock %}
 <div class="card mb-4">
     <div class="card-header bg-light">
         <h5 class="section-title">Recherche - Fonctionnaire (FONC)</h5>
     </div>
     <div class="card-body">
         <div class="row g-3">
-            <div class="col-md-3">
-                <label class="fw-bold">Matricule</label>
-                <input type="text" id="search_matricule" class="form-control" placeholder="Ex: 12345">
-            </div>
-
             <div class="col-md-4">
                 <label class="fw-bold">Corps</label>
-                <select id="search_code_corpsfonc" class="form-select">
+                <select id="search_code_corpsfonc" class="form-select select2">
                     <option value="">-- Sélectionnez --</option>
                     {% for corps in corpsFonc %}
                         <option value="{{ corps.codeCorps ?? corps.Code_Corps ?? corps.id }}">
@@ -35,14 +34,16 @@
             </div>
         </div>
 
-        <div class="mt-3">
-            <button type="button" id="btn_search" class="btn btn-primary">
-                <i class="fas fa-search"></i> Rechercher
-            </button>
-        </div>
+{#        <div class="mt-3">#}
+{#            <button type="button" id="btn_search" class="btn btn-primary">#}
+{#                <i class="fas fa-search"></i> Rechercher#}
+{#            </button>#}
+{#        </div>#}
     </div>
 </div>
 {% block javascripts %}
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         // ==================== Éléments ====================
@@ -118,43 +119,43 @@
         }
 
         // ==================== Recherche par Matricule ====================
-        const btnSearch = document.getElementById('btn_search');
-        if (btnSearch) {
-            btnSearch.addEventListener('click', function () {
-                const matricule = document.getElementById('search_matricule').value.trim();
+        {#const btnSearch = document.getElementById('btn_search');#}
+        {#if (btnSearch) {#}
+        {#    btnSearch.addEventListener('click', function () {#}
+        {#        const matricule = document.getElementById('search_matricule').value.trim();#}
 
-                if (!matricule) {
-                    showToast("Veuillez entrer un matricule !");
-                    return;
-                }
+        {#        if (!matricule) {#}
+        {#            showToast("Veuillez entrer un matricule !");#}
+        {#            return;#}
+        {#        }#}
 
-                btnSearch.disabled = true;
-                btnSearch.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Recherche...';
+        {#        btnSearch.disabled = true;#}
+        {#        btnSearch.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Recherche...';#}
 
-                fetch('{{ path("agent_search_by_matricule") }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    body: JSON.stringify({ matricule: matricule })
-                })
-                    .then(r => r.json())
-                    .then(data => {
-                        if (data.success && data.agent) {
-                            document.querySelector('input[name="Matricule"]').value = data.agent.matricule || '';
-                            showToast("Agent chargé avec succès !");
-                        } else {
-                            showToast(data.message || "Matricule non trouvé");
-                        }
-                    })
-                    .catch(() => showToast("Erreur de connexion"))
-                    .finally(() => {
-                        btnSearch.disabled = false;
-                        btnSearch.innerHTML = '<i class="fas fa-search"></i> Rechercher';
-                    });
-            });
-        }
+        {#        fetch('{{ path("agent_search_by_matricule") }}', {#}
+        {#            method: 'POST',#}
+        {#            headers: {#}
+        {#                'Content-Type': 'application/json',#}
+        {#                'X-Requested-With': 'XMLHttpRequest'#}
+        {#            },#}
+        {#            body: JSON.stringify({ matricule: matricule })#}
+        {#        })#}
+        {#            .then(r => r.json())#}
+        {#            .then(data => {#}
+        {#                if (data.success && data.agent) {#}
+        {#                    document.querySelector('input[name="Matricule"]').value = data.agent.matricule || '';#}
+        {#                    showToast("Agent chargé avec succès !");#}
+        {#                } else {#}
+        {#                    showToast(data.message || "Matricule non trouvé");#}
+        {#                }#}
+        {#            })#}
+        {#            .catch(() => showToast("Erreur de connexion"))#}
+        {#            .finally(() => {#}
+        {#                btnSearch.disabled = false;#}
+        {#                btnSearch.innerHTML = '<i class="fas fa-search"></i> Rechercher';#}
+        {#            });#}
+        {#    });#}
+        {#}#}
         // Mise à jour initiale au cas où les champs sont déjà remplis
         if (inputCodeCorps && inputCodeGrade) {
             updateIndiceAuto();
@@ -198,6 +199,13 @@
                 setTimeout(() => toast.remove(), 500);
             }, 4000);
         }
+        $(document).ready(function () {
+            $('#search_code_corpsfonc').select2({
+                placeholder: '-- Sélectionnez --',
+                allowClear: true,
+                width: '100%'
+            });
+        });
     });
 </script>
 {% endblock %}

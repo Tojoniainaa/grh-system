@@ -243,7 +243,7 @@
                         {% endif %}
 
                         {% if situation.codeCorps %}
-                            <span class="info-badge"><strong>Corps</strong> {{ situation.codeCorps }}</span>
+                            <span class="info-badge"><strong>Corps</strong> {{ situation.codeCorps ? situation.codeCorps.libelleCorps : '—' }}</span>
                         {% endif %}
 
                         {% if situation.datePriseServ %}
