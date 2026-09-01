@@ -7,6 +7,7 @@ use App\Form\AgentsType;
 use App\Repository\AgentsRepository;
 use App\Repository\Indiceefa4Repository;
 use App\Repository\IndiceefaRepository;
+use App\Repository\SituationAdmRepository;
 use App\Repository\StatusfonRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -33,6 +34,25 @@ class AgentsController extends AbstractController
             'currentPage' => $page,
             'totalPages'  => (int) ceil($paginator->count() / $limit),
             'totalAgents' => $paginator->count(),
+        ]);
+    }
+
+    #[Route('/tableau_borde', name: 'tableau_borde', methods: ['GET'])]
+    public function tableauBord(
+        SituationAdmRepository $situationAdmRepository
+    ): Response {
+
+        $totalPersonnes = $situationAdmRepository->countDistinctMatricules();
+
+        $parStatus = $situationAdmRepository->countByStatus();
+
+        $parCategorie = $situationAdmRepository->countByCategorie();
+
+        return $this->render('home/index.html.twig', [
+            'totalPersonnes' => $totalPersonnes,
+            'parStatus'      => $parStatus,
+            'parCategorie'   => $parCategorie,
+            'anneeExercice'  => (int) date('Y'),
         ]);
     }
 

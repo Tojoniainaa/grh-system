@@ -2,12 +2,14 @@
 
 namespace App\Controller;
 
+use App\Entity\Corpsefa;
 use App\Entity\Corpsfon;
 use App\Entity\Gradefon;
 use App\Entity\SituationAdm;
 use App\Entity\Statusfon;
 use App\Repository\AgentsRepository;
 use App\Repository\BudgetRepository;
+use App\Repository\Corpsefa4Repository;
 use App\Repository\CorpsefaRepository;
 use App\Repository\CorpseldRepository;
 use App\Repository\CorpsfonRepository;
@@ -33,6 +35,7 @@ class SituationAdministrativeController extends AbstractController
         SituationAdmRepository $situationAdmRepository,
         CorpsfonRepository $corpsfonRepository,
         CorpsEfaRepository $corpsEfaRepository,
+        Corpsefa4Repository $corpsEfa4Repository,
         CorpsEldRepository $corpsEldRepository,
         CorpsHeeRepository $corpsHeeRepository,
         GradeFonRepository $gradeFonRepository,
@@ -49,6 +52,7 @@ class SituationAdministrativeController extends AbstractController
         // Variables pour Twig
         $corpsFonc = [];
         $corpsEfa  = [];
+        $corpsEfa4  = [];
         $corpsEld  = [];
         $corpsHee  = [];
         $grades    = $gradeFonRepository->findBy([], ['libelleGrade' => 'ASC']); // solution temporaire
@@ -57,8 +61,10 @@ class SituationAdministrativeController extends AbstractController
         // Chargement conditionnel
         if ($status === 'FONC') {
             $corpsFonc = $corpsfonRepository->findByCategorie($categorie);
-        } elseif ($status === 'EFA') {
-            $corpsEfa = $corpsEfaRepository->findByCategorie($categorie, $categorie >= 4);
+        } elseif ($status==='EFA' && $categorie >= 4){
+            $corpsEfa4 = $corpsEfa4Repository->findByCategorie($categorie );
+        }elseif ($status === 'EFA') {
+            $corpsEfa = $corpsEfaRepository->findByCategorie($categorie );
             $echelles = $echelleRepository->findByCategorie($categorie);
         } elseif ($status === 'ELD') {
             $corpsEld = $corpsEldRepository->findByCategorie($categorie);
@@ -111,10 +117,7 @@ class SituationAdministrativeController extends AbstractController
             if ($status === 'FONC') {
                 // Code Corps (champ caché name="Code_Corps")
                 if (!empty($data['Code_Corps'])) {
-                    $corps = $em->getRepository(Corpsfon::class)->find($data['Code_Corps']);
-                    if ($corps) {
-                        $situation->setCodeCorps($corps);
-                    }
+                        $situation->setCodeCorps($data['Code_Corps']);
                 }
                 // Code Grade (champ caché name="Code_Gradefonc")
                 if (!empty($data['Code_Gradefonc'])) {
@@ -172,6 +175,7 @@ class SituationAdministrativeController extends AbstractController
             'categorie'  => $categorie,
             'corpsFonc'  => $corpsFonc,
             'corpsEfa'   => $corpsEfa,
+            'corpsEfa4'   => $corpsEfa4,
             'corpsEld'   => $corpsEld,
             'corpsHee'   => $corpsHee,
             'gradesFonc' => $grades,
@@ -337,6 +341,38 @@ class SituationAdministrativeController extends AbstractController
         ]);
     }
 
+    #[Route('/avancement/efa4-modal/{matricule}', name: 'avancement_efa4_modal', methods: ['GET'])]
+    public function avancementEFA4Modal(
+        string $matricule,
+        AgentsRepository $agentRepo,
+        SituationAdmRepository $situationRepo,
+        EntityManagerInterface $em
+    ): Response {
+        $agent = $agentRepo->findOneBy(['matricule' => $matricule]);
+        if (!$agent) {
+            return new Response('<div class="alert alert-danger m-4">Agent introuvable</div>', 404);
+        }
+
+        $situation = $situationRepo->findOneBy(['matricule' => $matricule]);
+        if (!$situation) {
+            return new Response('<div class="alert alert-danger m-4">Situation administrative introuvable</div>', 404);
+        }
+
+        // Grades
+        $grades = $em->getRepository(GradeFon::class)->findAll();
+
+        // Indices → change Statusfon par le vrai nom de ton entité Indice
+        // Exemple : Indice::class ou Statusfon si c’est vraiment cette table
+        $indices = $em->getRepository(Statusfon::class)->findAll();
+
+        return $this->render('avancement/_efa4_modal_content.html.twig', [
+            'agent'     => $agent,
+            'situation' => $situation,
+            'grades'    => $grades,
+            'indices'   => $indices,
+        ]);
+    }
+
     #[Route('/avancement/corps-modal/{matricule}', name: 'avancement_corps_modal', methods: ['GET'])]
     public function avancementCorpsModal(
         string $matricule,
@@ -362,6 +398,38 @@ class SituationAdministrativeController extends AbstractController
             'situation' => $situation,
             'corpsList' => $corpsList,
             'indices'   => $indices,
+        ]);
+    }
+    #[Route('/avancement/efa-modal/{matricule}', name: 'avancement_efa_modal', methods: ['GET'])]
+    public function avancementEfaModal(
+        string $matricule,
+        AgentsRepository $agentRepo,
+        SituationAdmRepository $situationRepo,
+        EntityManagerInterface $em,
+        EchelleRepository $echelleRepository,
+    ): Response {
+        $agent = $agentRepo->findOneBy(['matricule' => $matricule]);
+        if (!$agent) {
+            return new Response('<div class="alert alert-danger m-4">Agent introuvable</div>', 404);
+        }
+
+        $situation = $situationRepo->findOneBy(['matricule' => $matricule]);
+        if (!$situation) {
+            return new Response('<div class="alert alert-danger m-4">Situation administrative introuvable</div>', 404);
+        }
+
+        // Corps EFA + Échelles + Échelons selon la catégorie
+        $categorie = $situation->getCategorie() ?? 0;
+        $corpsList = $em->getRepository(Corpsefa::class)->findByCategorie($categorie, false); // ≤ 3
+        $indices   = $em->getRepository(Statusfon::class)->findAll(); // ou ton repo d'indices
+        $echelles = $echelleRepository->findByCategorie($categorie);
+
+        return $this->render('avancement/_efa_modal_content.html.twig', [
+            'agent'     => $agent,
+            'situation' => $situation,
+            'corpsList' => $corpsList,
+            'indices'   => $indices,
+            'echelles'   => $echelles,
         ]);
     }
 }

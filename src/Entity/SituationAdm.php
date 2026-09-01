@@ -30,9 +30,8 @@ class SituationAdm
 
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $codeGrade = null;
-    #[ORM\ManyToOne(targetEntity: Corpsfon::class)]
-    #[ORM\JoinColumn(name: "Code_Corps", referencedColumnName: "Code_Corps")]
-    private ?Corpsfon $codeCorps = null;
+    #[ORM\Column(name: 'Code_Corps', length: 10, nullable: true)]
+    private ?string $codeCorps = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $categorie = null;
@@ -152,12 +151,12 @@ class SituationAdm
         return $this;
     }
 
-    public function getCodeCorps(): ?Corpsfon
+    public function getCodeCorps(): ?string
     {
         return $this->codeCorps;
     }
 
-    public function setCodeCorps(?Corpsfon $codeCorps): static
+    public function setCodeCorps(?string $codeCorps): self
     {
         $this->codeCorps = $codeCorps;
         return $this;

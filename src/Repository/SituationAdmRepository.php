@@ -70,4 +70,36 @@ class SituationAdmRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function countDistinctMatricules(): int
+    {
+        return (int) $this->createQueryBuilder('s')
+            ->select('COUNT(DISTINCT s.matricule)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function countByStatus(): array
+    {
+        return $this->createQueryBuilder('s')
+            ->select('s.statu AS status, COUNT(DISTINCT s.matricule) AS total')
+            ->where('s.statu IS NOT NULL')
+            ->andWhere('s.statu != :empty')
+            ->setParameter('empty', '')
+            ->groupBy('s.statu')
+            ->orderBy('total', 'DESC')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    public function countByCategorie(): array
+    {
+        return $this->createQueryBuilder('s')
+            ->select('s.categorie AS categorie, COUNT(DISTINCT s.matricule) AS total')
+            ->where('s.categorie IS NOT NULL')
+            ->groupBy('s.categorie')
+            ->orderBy('s.categorie', 'ASC')
+            ->getQuery()
+            ->getArrayResult();
+    }
 }

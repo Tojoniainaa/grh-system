@@ -1,0 +1,152 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Demandes de Congé{% endblock %}
+
+{% block body %}
+    <div class="page-header">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h1 class="page-title">
+                    <i class="bi bi-calendar-check text-primary me-2"></i>
+                    Demandes de Congé
+                </h1>
+                <p class="page-subtitle">Gestion des demandes de congé des agents</p>
+            </div>
+            <a href="{{ path('conge_ajout') }}" class="btn btn-success-modern">
+                <i class="bi bi-plus-lg me-1"></i> Nouvelle demande
+            </a>
+        </div>
+    </div>
+
+    {# Recherche #}
+    <div class="modern-card mb-4">
+        <div class="card-body-modern">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-8">
+                    <label class="form-label">Rechercher</label>
+                    <input type="text" name="q" class="form-control"
+                           value="{{ q }}" placeholder="Matricule, motifs, lieu...">
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search me-1"></i> Rechercher
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modern-card">
+        <div class="card-header-modern">
+            <div class="icon-box"><i class="bi bi-list-ul"></i></div>
+            <div>
+                <h5>Liste des demandes</h5>
+                <small class="text-muted">{{ total }} demande(s) trouvée(s)</small>
+            </div>
+        </div>
+
+        <div class="card-body-modern p-0">
+            {% if demandes is empty %}
+                <div class="empty-state">
+                    <i class="bi bi-inbox display-5 d-block mb-3 opacity-50"></i>
+                    <p class="mb-3">Aucune demande de congé trouvée.</p>
+                    <a href="{{ path('conge_ajout') }}" class="btn btn-search">
+                        <i class="bi bi-plus-lg me-1"></i> Créer une demande
+                    </a>
+                </div>
+            {% else %}
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <thead>
+                        <tr>
+                            <th class="ps-4">N°</th>
+                            <th>Matricule</th>
+                            <th>Date demande</th>
+                            <th>Durée</th>
+                            <th>Départ</th>
+                            <th>Retour</th>
+                            <th>Lieu</th>
+                            <th>Jours restants</th>
+                            <th class="text-end pe-4">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for d in demandes %}
+                            <tr>
+                                <td class="ps-4">
+                                    <span class="badge bg-light text-dark">#{{ d.id }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge-matricule">{{ d.matricule }}</span>
+                                </td>
+                                <td>{{ d.dateDemande|date('d/m/Y') }}</td>
+                                <td>
+                                    <span class="badge bg-info">{{ d.duree }} j</span>
+                                </td>
+                                <td>{{ d.dateDepart|date('d/m/Y') }}</td>
+                                <td>{{ d.dateRetour|date('d/m/Y') }}</td>
+                                <td>{{ d.lieuJouissance }}</td>
+                                <td>
+                                    <span class="badge {{ d.nbJoursReste > 0 ? 'bg-success' : 'bg-secondary' }}">
+                                        {{ d.nbJoursReste ?? 0 }} j
+                                    </span>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <a href=""
+                                       class="btn btn-outline-primary btn-action" title="Voir">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{{ path('conge_edit', {id: d.id}) }}"
+                                       class="btn btn-outline-secondary btn-action" title="Modifier">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form method="post" action="{{ path('conge_delete', {id: d.id}) }}"
+                                          class="d-inline"
+                                          onsubmit="return confirm('Supprimer cette demande ?');">
+                                        <input type="hidden" name="_token"
+                                               value="{{ csrf_token('delete' ~ d.id) }}">
+                                        <button class="btn btn-outline-danger btn-action" title="Supprimer">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {# Pagination #}
+                {% if totalPages > 1 %}
+                    <div class="d-flex justify-content-between align-items-center px-4 py-3 border-top">
+                        <div class="text-muted small">
+                            Page {{ currentPage }} sur {{ totalPages }}
+                        </div>
+                        <nav>
+                            <ul class="pagination pagination-sm mb-0">
+                                <li class="page-item {{ currentPage == 1 ? 'disabled' : '' }}">
+                                    <a class="page-link"
+                                       href="{{ path('conge_index', {page: currentPage - 1, q: q}) }}">
+                                        <i class="bi bi-chevron-left"></i>
+                                    </a>
+                                </li>
+                                {% for p in 1..totalPages %}
+                                    <li class="page-item {{ p == currentPage ? 'active' : '' }}">
+                                        <a class="page-link"
+                                           href="{{ path('conge_index', {page: p, q: q}) }}">{{ p }}</a>
+                                    </li>
+                                {% endfor %}
+                                <li class="page-item {{ currentPage == totalPages ? 'disabled' : '' }}">
+                                    <a class="page-link"
+                                       href="{{ path('conge_index', {page: currentPage + 1, q: q}) }}">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

@@ -214,17 +214,38 @@
                 <div class="stat-icon icon-blue">
                     <i class="bi bi-people-fill"></i>
                 </div>
-                <div class="stat-value">150</div>
+                <div class="stat-value"> {{totalPersonnes}}</div>
                 <div class="stat-label">Agents</div>
             </div>
         </div>
 
         <div class="col-6 col-md-3">
             <div class="stat-card">
+                <div class="stat-icon icon-amber">
+                    <i class="bi bi-diagram-3-fill"></i>
+                </div>
+                <div class="stat-value"> {{ parCategorie|length }}</div>
+                <div class="stat-label">Categorie</div>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon icon-rose">
+                    <i class="bi bi-calendar3"></i>
+                </div>
+                <div class="stat-value">{{ anneeExercice }}</div>
+                <div class="stat-label">Année d’exercice</div>
+            </div>
+        </div>
+    </div>
+    <div class="row g-4 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
                 <div class="stat-icon icon-green">
                     <i class="bi bi-building"></i>
                 </div>
-                <div class="stat-value">12</div>
+                <div class="stat-value"></div>
                 <div class="stat-label">Directions</div>
             </div>
         </div>
@@ -234,20 +255,97 @@
                 <div class="stat-icon icon-amber">
                     <i class="bi bi-diagram-3-fill"></i>
                 </div>
-                <div class="stat-value">25</div>
+                <div class="stat-value"></div>
                 <div class="stat-label">Services</div>
             </div>
         </div>
 
-        <div class="col-6 col-md-3">
-            <div class="stat-card">
-                <div class="stat-icon icon-rose">
-                    <i class="bi bi-calendar3"></i>
+    </div>
+    <div class="row g-4">
+
+        <div class="col-md-6">
+
+            <div class="card shadow-sm border-0">
+
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person-badge me-2"></i>
+                        Répartition par statut
+                    </h5>
                 </div>
-                <div class="stat-value">2026</div>
-                <div class="stat-label">Année d’exercice</div>
+
+                <div class="card-body">
+
+                    {% for item in parStatus %}
+
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+
+                        <span>
+                            {{ item.status }}
+                        </span>
+
+                            <span class="badge bg-primary rounded-pill">
+                            {{ item.total }}
+                        </span>
+
+                        </div>
+
+                    {% else %}
+
+                        <div class="text-muted">
+                            Aucun statut trouvé.
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
             </div>
+
         </div>
+
+
+        <div class="col-md-6">
+
+            <div class="card shadow-sm border-0">
+
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-diagram-3 me-2"></i>
+                        Répartition par catégorie
+                    </h5>
+                </div>
+
+                <div class="card-body">
+
+                    {% for item in parCategorie %}
+
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+
+                        <span>
+                            Catégorie {{ item.categorie }}
+                        </span>
+
+                            <span class="badge bg-success rounded-pill">
+                            {{ item.total }}
+                        </span>
+
+                        </div>
+
+                    {% else %}
+
+                        <div class="text-muted">
+                            Aucune catégorie trouvée.
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
 
     {# ===== ACCÈS RAPIDES ===== #}

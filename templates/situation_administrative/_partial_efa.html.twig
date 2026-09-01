@@ -7,10 +7,6 @@
         {% if categorie <= 3 %}
             <!-- EFA Catégorie ≤ 3 (Échelle + Échelon) -->
             <div class="row g-3">
-                <div class="col-md-3">
-                    <label class="fw-bold">Matricule</label>
-                    <input type="text" name="Matricule" class="form-control">
-                </div>
                 <div class="col-md-4">
                     <label class="fw-bold">Corps EFA</label>
                     <select name="Corps_EFA3" class="form-select">
@@ -40,14 +36,10 @@
         {% else %}
             <!-- EFA Catégorie ≥ 4 -->
             <div class="row g-3">
-                <div class="col-md-3">
-                    <label class="fw-bold">Matricule</label>
-                    <input type="text" name="Matricule" class="form-control">
-                </div>
                 <div class="col-md-4">
                     <label class="fw-bold">Corps EFA</label>
                     <select name="Corps_EFA" class="form-select">
-                        {% for corps in corpsEfa %}
+                        {% for corps in corpsEfa4 %}
                             <option value="{{ corps.codeCorps }}">{{ corps.libelleCorps }}</option>
                         {% endfor %}
                     </select>
@@ -55,6 +47,7 @@
                 <div class="col-md-5">
                     <label class="fw-bold">Grade</label>
                     <select name="Code_Gradefonc" class="form-select">
+                        <option value="">-- Choisir --</option>
                         {% for grade in gradesFonc %}
                             <option value="{{ grade.codeGrade }}">{{ grade.libelleGrade }}</option>
                         {% endfor %}

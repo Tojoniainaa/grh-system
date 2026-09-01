@@ -1,0 +1,118 @@
+{# ===== POSITION DE L'AGENT ===== #}
+<div class="p-4" style="background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%); border-bottom: 1px solid #ddd6fe;">
+    <div class="d-flex align-items-center gap-3">
+        <div>
+            {% if agent.nomPhotos %}
+                <img src="{{ asset('uploads/photos/' ~ agent.nomPhotos) }}"
+                     style="width:64px;height:64px;object-fit:cover;border-radius:50%;border:3px solid #fff;box-shadow:0 4px 12px rgba(0,0,0,.12);"
+                     alt="Photo">
+            {% else %}
+                <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#8b5cf6,#6d28d9);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.1rem;">
+                    {{ agent.nom|first|upper }}{{ agent.prenom|first|upper }}
+                </div>
+            {% endif %}
+        </div>
+        <div>
+            <div class="fw-bold fs-5 mb-1">{{ agent.nom }} {{ agent.prenom }}</div>
+            <div class="text-muted small">
+                <span class="me-3"><strong>IM :</strong> {{ agent.matricule }}</span>
+                <span class="me-3"><strong>Statut :</strong> {{ situation.statu }}</span>
+                <span><strong>Catégorie :</strong> {{ situation.categorie ?? '—' }}</span>
+            </div>
+            <div class="text-muted small mt-1">
+                <span class="me-3"><strong>Corps :</strong> {{ situation.codeCorps ?? '—' }}</span>
+                <span class="me-3"><strong>Échelle :</strong> {{ situation.echelle ?? '—' }}</span>
+                <span class="me-3"><strong>Échelon :</strong> {{ situation.echelon ?? '—' }}</span>
+                <span><strong>Indice :</strong> {{ situation.indice ?? '—' }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# ===== FORMULAIRE ===== #}
+<form method="post" class="p-4">
+    <div class="row g-3">
+
+        {# Nouveau Corps #}
+        <div class="col-md-6">
+            <label class="form-label fw-medium">Nouveau Corps</label>
+            <select name="code_corps" class="form-select">
+                <option value="">— Sélectionner un corps —</option>
+                {% for corps in corpsList %}
+                    <option value="{{ corps.codeCorps }}"
+                        {{ situation.codeCorps == corps.codeCorps ? 'selected' : '' }}>
+                        {{ corps.libelleCorps }} ({{ corps.codeCorps }})
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        {# Nouvelle Échelle #}
+        <div class="col-md-3">
+            <label class="form-label fw-medium">Échelle <span class="text-danger">*</span></label>
+            <select name="echelle" class="form-select" required>
+                <option value="">— Choisir —</option>
+                {% for ech in echelles %}
+                    <option value="{{ ech.echelle ?? ech.libelle ?? ech.id }}"
+                        {{ situation.echelle == (ech.echelle ?? ech.libelle ?? ech.id) ? 'selected' : '' }}>
+                        {{ ech.echelle ?? ech.libelle ?? ech.id }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        {# Nouvel Échelon #}
+        <div class="col-md-3">
+            <label class="form-label fw-medium">Échelon <span class="text-danger">*</span></label>
+            <input type="text" name="echelon" class="form-control" required
+                   value="{{ situation.echelon ?? '' }}"
+                   placeholder="Ex: 1, 2, 3...">
+        </div>
+
+        {# Nouvel Indice #}
+        <div class="col-md-6">
+            <label class="form-label fw-medium">Nouvel Indice <span class="text-danger">*</span></label>
+            <select name="indice" class="form-select" required>
+                <option value="">— Sélectionner un indice —</option>
+                {% for indice in indices %}
+                    <option value="{{ indice.indice }}"
+                        {{ situation.indice == indice.indice ? 'selected' : '' }}>
+                        {{ indice.indice }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        {# Date Décision #}
+        <div class="col-md-3">
+            <label class="form-label fw-medium">Date Décision</label>
+            <input type="date" name="date_texte" class="form-control"
+                   value="{{ situation.dateTexte ? situation.dateTexte|date('Y-m-d') : '' }}">
+        </div>
+
+        {# Référence #}
+        <div class="col-md-3">
+            <label class="form-label fw-medium">Réf. Notification</label>
+            <input type="text" name="ref_notification" class="form-control"
+                   value="{{ situation.refNotification ?? '' }}"
+                   placeholder="Référence...">
+        </div>
+
+        {# Date d'Effet #}
+        <div class="col-md-6">
+            <label class="form-label fw-medium">Date d'Effet <span class="text-danger">*</span></label>
+            <input type="date" name="date_effet" class="form-control" required
+                   value="{{ situation.dateEffet ? situation.dateEffet|date('Y-m-d') : '' }}">
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+        <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">
+            Annuler
+        </button>
+        <button type="submit" class="btn btn-primary px-4"
+                style="background:linear-gradient(135deg,#8b5cf6,#6d28d9);border:none;">
+            <i class="bi bi-check-lg me-1"></i> Valider l'avancement EFA
+        </button>
+    </div>
+</form>

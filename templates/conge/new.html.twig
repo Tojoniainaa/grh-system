@@ -1,0 +1,470 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle demande de congé — GRH System{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        .page-header {
+            margin-bottom: 1.75rem;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.25rem;
+        }
+
+        .page-subtitle {
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        .modern-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px -5px rgba(15, 44, 89, 0.07);
+            overflow: hidden;
+        }
+
+        .card-header-modern {
+            background: linear-gradient(to right, #f8fafc, #f1f5f9);
+            border-bottom: 1px solid #e2e8f0;
+            padding: 1.1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card-header-modern .icon-box {
+            width: 40px;
+            height: 40px;
+            border-radius: 11px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.15rem;
+        }
+
+        .card-header-modern h5 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #0f172a;
+        }
+
+        .card-body-modern {
+            padding: 1.75rem;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.3rem;
+            border-bottom: 2px solid #dbeafe;
+        }
+
+        .section-title i {
+            font-size: 1.1rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            font-size: 0.875rem;
+            color: #334155;
+            margin-bottom: 0.35rem;
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 1.5px solid #e2e8f0;
+            padding: 0.6rem 0.9rem;
+            font-size: 0.925rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 0.7rem 1.4rem;
+            font-weight: 500;
+            color: #64748b;
+            transition: all 0.2s;
+        }
+
+        .btn-ghost:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            color: #1e293b;
+        }
+
+        .btn-success-modern {
+            background: linear-gradient(135deg, #059669, #10b981);
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            color: white;
+            box-shadow: 0 4px 14px rgba(5, 150, 105, 0.3);
+            transition: all 0.2s;
+        }
+
+        .btn-success-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(5, 150, 105, 0.4);
+            color: white;
+        }
+
+        .form-divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #e2e8f0, transparent);
+            margin: 0.5rem 0;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="page-header">
+        <h1 class="page-title">
+            <i class="bi bi-calendar-plus text-primary me-2"></i>
+            Nouvelle demande de congé
+        </h1>
+        <p class="page-subtitle">Renseignez les informations de la demande de congé</p>
+    </div>
+
+    <div class="modern-card">
+        <div class="card-header-modern">
+            <div class="icon-box">
+                <i class="bi bi-calendar-check"></i>
+            </div>
+            <div>
+                <h5>Informations de la demande</h5>
+                <small class="text-muted">Tous les champs marqués d’un * sont obligatoires</small>
+            </div>
+        </div>
+
+        <div class="card-body-modern">
+            <form method="post">
+
+                <div class="row g-4">
+
+                    {# ===== INFORMATIONS PRINCIPALES ===== #}
+                    <div class="col-12">
+                        <div class="section-title">
+                            <i class="bi bi-person-badge"></i>
+                            Agent & Période
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 input-group">
+                        <input type="text" name="matricule" id="input_matricule"
+                               class="form-control" placeholder="Ex : 123456" required>
+                        <button type="button" class="btn btn-outline-primary" id="btn_liste_sans_sa"
+                                title="Voir les agents sans Situation Administrative">
+                            <i class="bi bi-list-ul"></i>
+                        </button>
+                    </div>
+{#                    <div class="input-group">#}
+{#                        <input type="text" name="Matricule" id="input_matricule"#}
+{#                               class="form-control" placeholder="Ex : 123456" required>#}
+{#                        <button type="button" class="btn btn-outline-primary" id="btn_liste_sans_sa"#}
+{#                                title="Voir les agents sans Situation Administrative">#}
+{#                            <i class="bi bi-list-ul"></i>#}
+{#                        </button>#}
+{#                    </div>#}
+                    <div class="col-md-4">
+                        <label class="form-label">Date de demande <span class="text-danger">*</span></label>
+                        <input type="date" name="date_demande" class="form-control" required
+                               value="{{ 'now'|date('Y-m-d') }}">
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Durée (jours) <span class="text-danger">*</span></label>
+                        <input type="number" name="duree" class="form-control" required min="1"
+                               placeholder="Ex: 15">
+                    </div>
+
+                    <div class="col-12">
+                        <div class="form-divider"></div>
+                    </div>
+
+                    {# ===== DATES ===== #}
+                    <div class="col-12">
+                        <div class="section-title">
+                            <i class="bi bi-calendar-range"></i>
+                            Dates de congé
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Date de départ <span class="text-danger">*</span></label>
+                        <input type="date" name="date_depart" class="form-control" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Date de retour <span class="text-danger">*</span></label>
+                        <input type="date" name="date_retour" class="form-control" required>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="form-divider"></div>
+                    </div>
+
+                    {# ===== DÉTAILS ===== #}
+                    <div class="col-12">
+                        <div class="section-title">
+                            <i class="bi bi-geo-alt"></i>
+                            Détails
+                        </div>
+                    </div>
+
+                    <div class="col-md-8">
+                        <label class="form-label">Lieu de jouissance <span class="text-danger">*</span></label>
+                        <input type="text" name="lieu_jouissance" class="form-control" required
+                               placeholder="Ex: Antananarivo">
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Jours restants</label>
+                        <input type="number" name="nb_jours_reste" class="form-control" min="0"
+                               placeholder="Ex: 30">
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label">Motifs <span class="text-danger">*</span></label>
+                        <textarea name="motifs" class="form-control" rows="3" required
+                                  placeholder="Motif de la demande de congé..."></textarea>
+                    </div>
+                </div>
+
+                {# Boutons #}
+                <div class="d-flex justify-content-end gap-3 mt-5 pt-2">
+                    <a href="{{ path('conge_index') }}" class="btn btn-ghost">
+                        <i class="bi bi-arrow-left me-1"></i>
+                        Annuler
+                    </a>
+                    <button type="submit" class="btn btn-success-modern">
+                        <i class="bi bi-check2-circle me-1"></i>
+                        Enregistrer la demande
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Modal : Agents sans Situation Administrative -->
+    <div class="modal fade" id="modalAgentsSansSA" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow" style="border-radius: 16px;">
+                <div class="modal-header border-0 pb-2">
+                    <h5 class="modal-title fw-bold">
+                        <i class="bi bi-person-x text-warning me-2"></i>
+                        Agents sans Situation Administrative
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body pt-0">
+                    <!-- Barre de recherche -->
+                    <div class="input-group mb-3">
+                    <span class="input-group-text bg-white">
+                        <i class="bi bi-search"></i>
+                    </span>
+                        <input type="text"
+                               id="search_agents_sans_sa"
+                               class="form-control"
+                               placeholder="Rechercher par matricule, nom, prénom ou date de naissance (jj/mm/aaaa)...">
+                    </div>
+
+                    <p class="text-muted small mb-2">
+                        Cliquez sur <strong>Sélectionner</strong> pour remplir le matricule.
+                        Vous pouvez aussi fermer et continuer la saisie normalement.
+                    </p>
+
+                    <div class="table-responsive" style="max-height: 380px;">
+                        <table class="table table-hover table-sm align-middle mb-0">
+                            <thead class="table-light sticky-top">
+                            <tr>
+                                <th>Matricule</th>
+                                <th>Nom & Prénom</th>
+                                <th>Sexe</th>
+                                <th>Date naissance</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody id="tbody_agents_sans_sa">
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">
+                                    <i class="bi bi-hourglass-split"></i> Chargement...
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="border-radius: 10px;">
+                        Fermer et continuer la saisie
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block javascripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const btnListe       = document.getElementById('btn_liste_sans_sa');
+        const modalEl        = document.getElementById('modalAgentsSansSA');
+        const tbody          = document.getElementById('tbody_agents_sans_sa');
+        const inputMatricule = document.getElementById('input_matricule');
+        const searchInput    = document.getElementById('search_agents_sans_sa');
+
+        if (!btnListe || !modalEl || !tbody) {
+            console.error('Éléments du modal introuvables');
+            return;
+        }
+
+        const modal = new bootstrap.Modal(modalEl);
+        let allAgents = [];
+
+        // ===== Afficher les agents dans le tableau =====
+        function renderAgents(agents) {
+            if (!agents || agents.length === 0) {
+                tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="text-center text-muted py-4">
+                        Aucun agent trouvé
+                    </td>
+                </tr>`;
+                return;
+            }
+
+            let html = '';
+            agents.forEach(function (agent) {
+                html += `
+                <tr>
+                    <td>
+                        <span class="badge bg-primary-subtle text-primary">
+                            ${agent.matricule || '—'}
+                        </span>
+                    </td>
+                    <td class="fw-semibold">${agent.nom || ''} ${agent.prenom || ''}</td>
+                    <td>${agent.sexe || '—'}</td>
+                    <td>${agent.dateNaissance || '—'}</td>
+                    <td class="text-end">
+                        <button type="button"
+                                class="btn btn-sm btn-outline-primary btn-select-matricule"
+                                data-matricule="${agent.matricule}">
+                            Sélectionner
+                        </button>
+                    </td>
+                </tr>`;
+            });
+
+            tbody.innerHTML = html;
+
+            // Boutons "Sélectionner"
+            document.querySelectorAll('.btn-select-matricule').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    const mat = this.getAttribute('data-matricule');
+                    if (inputMatricule) {
+                        inputMatricule.value = mat;
+                        inputMatricule.focus();
+                    }
+                    modal.hide();
+                });
+            });
+        }
+
+        // ===== Ouvrir le modal + charger la liste =====
+        btnListe.addEventListener('click', function () {
+            // Réinitialiser
+            if (searchInput) searchInput.value = '';
+            allAgents = [];
+
+            tbody.innerHTML = `
+            <tr>
+                <td colspan="5" class="text-center text-muted py-4">
+                    <i class="bi bi-hourglass-split"></i> Chargement en cours...
+                </td>
+            </tr>`;
+
+            modal.show();
+
+            fetch('{{ path('api_agents_sans_situation') }}')
+                .then(function (response) {
+                    if (!response.ok) {
+                        throw new Error('Erreur HTTP ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(function (data) {
+                    console.log('Réponse API :', data); // pour debug
+
+                    if (data.success && Array.isArray(data.agents)) {
+                        allAgents = data.agents;
+                        renderAgents(allAgents);
+                    } else {
+                        tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                Aucun agent sans Situation Administrative
+                            </td>
+                        </tr>`;
+                    }
+                })
+                .catch(function (error) {
+                    console.error('Erreur fetch :', error);
+                    tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center text-danger py-4">
+                            Erreur lors du chargement de la liste
+                        </td>
+                    </tr>`;
+                });
+        });
+
+        // ===== Recherche en temps réel =====
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                const term = this.value.trim().toLowerCase();
+
+                if (term === '') {
+                    renderAgents(allAgents);
+                    return;
+                }
+
+                const filtered = allAgents.filter(function (agent) {
+                    const matricule = (agent.matricule || '').toString().toLowerCase();
+                    const nom       = (agent.nom || '').toLowerCase();
+                    const prenom    = (agent.prenom || '').toLowerCase();
+                    const dateNais  = (agent.dateNaissance || '').toLowerCase();
+
+                    return matricule.includes(term)
+                        || nom.includes(term)
+                        || prenom.includes(term)
+                        || dateNais.includes(term);
+                });
+
+                renderAgents(filtered);
+            });
+        }
+    });
+</script>
+{% endblock %}

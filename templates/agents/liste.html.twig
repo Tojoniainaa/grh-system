@@ -63,7 +63,9 @@
             color: #0f172a;
         }
 
-        .card-body-modern { padding: 1.35rem; }
+        .card-body-modern {
+            padding: 1.35rem;
+        }
 
         .position-card {
             background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);
@@ -79,7 +81,7 @@
             object-fit: cover;
             border-radius: 50%;
             border: 3px solid #fff;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
         }
 
         .position-name {
@@ -124,7 +126,10 @@
             font-weight: 600;
         }
 
-        .btn-search:hover { color: white; opacity: 0.95; }
+        .btn-search:hover {
+            color: white;
+            opacity: 0.95;
+        }
 
         .table thead th {
             background: #f8fafc;
@@ -142,7 +147,9 @@
             font-size: 0.9rem;
         }
 
-        .table tbody tr:hover { background: #f8fafc; }
+        .table tbody tr:hover {
+            background: #f8fafc;
+        }
 
         .badge-matricule {
             background: #dbeafe;
@@ -192,10 +199,10 @@
                     <select name="triage" class="form-select">
                         <option value="">— Tous les statuts —</option>
                         <option value="FONC" {{ triage == 'FONC' ? 'selected' : '' }}>Fonctionnaire</option>
-                        <option value="EFA"  {{ triage == 'EFA'  ? 'selected' : '' }}>EFA</option>
-                        <option value="ELD"  {{ triage == 'ELD'  ? 'selected' : '' }}>ELD</option>
-                        <option value="ECD"  {{ triage == 'ECD'  ? 'selected' : '' }}>ECD</option>
-                        <option value="HEE"  {{ triage == 'HEE'  ? 'selected' : '' }}>HEE</option>
+                        <option value="EFA" {{ triage == 'EFA'  ? 'selected' : '' }}>EFA</option>
+                        <option value="ELD" {{ triage == 'ELD'  ? 'selected' : '' }}>ELD</option>
+                        <option value="ECD" {{ triage == 'ECD'  ? 'selected' : '' }}>ECD</option>
+                        <option value="HEE" {{ triage == 'HEE'  ? 'selected' : '' }}>HEE</option>
                     </select>
                 </div>
                 <div class="col-md-5">
@@ -243,24 +250,27 @@
                         {% endif %}
 
                         {% if situation.codeCorps %}
-                            <span class="info-badge"><strong>Corps</strong> {{ situation.codeCorps ? situation.codeCorps.libelleCorps : '—' }}</span>
+                            <span
+                                class="info-badge"><strong>Corps</strong> {{ situation.codeCorps ? situation.codeCorps.libelleCorps : '—' }}</span>
                         {% endif %}
 
                         {% if situation.datePriseServ %}
-                            <span class="info-badge"><strong>Date prise service</strong> {{ situation.datePriseServ|date('d/m/Y') }}</span>
+                            <span
+                                class="info-badge"><strong>Date prise service</strong> {{ situation.datePriseServ|date('d/m/Y') }}</span>
                         {% elseif situation.dateEntre %}
-                            <span class="info-badge"><strong>Date entrée</strong> {{ situation.dateEntre|date('d/m/Y') }}</span>
+                            <span
+                                class="info-badge"><strong>Date entrée</strong> {{ situation.dateEntre|date('d/m/Y') }}</span>
                         {% endif %}
                     </div>
 
-{#                    {% if affectation %}#}
-{#                        <div class="mt-2">#}
-{#                            <span class="info-badge"><strong>Service</strong> </span>#}
-{#                            <span class="info-badge"><strong>Fonction</strong> </span>#}
-{#                            <span class="info-badge"><strong>Début</strong> </span>#}
-{#                            <span class="info-badge"><strong>Fin</strong> </span>#}
-{#                        </div>#}
-{#                    {% endif %}#}
+                    {#                    {% if affectation %} #}
+                    {#                        <div class="mt-2"> #}
+                    {#                            <span class="info-badge"><strong>Service</strong> </span> #}
+                    {#                            <span class="info-badge"><strong>Fonction</strong> </span> #}
+                    {#                            <span class="info-badge"><strong>Début</strong> </span> #}
+                    {#                            <span class="info-badge"><strong>Fin</strong> </span> #}
+                    {#                        </div> #}
+                    {#                    {% endif %} #}
                 </div>
             </div>
         </div>
@@ -345,14 +355,39 @@
 
                                 <td class="text-end text-nowrap">
                                     {% if triage == 'FONC' %}
-                                        <button type="button" class="btn btn-sm btn-outline-primary btn-action btn-avancement-fonc" data-matricule="{{ s.matricule }}" data-bs-toggle="modal" data-bs-target="#modalAvancementFonc">Avancement</button>
-                                        <button type="button" class="btn btn-sm btn-outline-info btn-action btn-avancement-corps" data-matricule="{{ s.matricule }}" data-bs-toggle="modal" data-bs-target="#modalAvancementCorps"><i class="bi bi-building me-1"></i> Corps</button>
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-primary btn-action btn-avancement-fonc"
+                                                data-matricule="{{ s.matricule }}" data-bs-toggle="modal"
+                                                data-bs-target="#modalAvancementFonc">Avancement
+                                        </button>
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-info btn-action btn-avancement-corps"
+                                                data-matricule="{{ s.matricule }}" data-bs-toggle="modal"
+                                                data-bs-target="#modalAvancementCorps"><i
+                                                class="bi bi-building me-1"></i> Corps
+                                        </button>
                                         <a href=""
                                            class="btn btn-sm btn-outline-dark btn-action" target="_blank">Historique</a>
 
-                                    {% elseif triage == 'EFA' %}
+                                    {% elseif triage == 'EFA' and s.categorie>=4 %}
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-primary btn-action btn-avancement-efa4"
+                                                data-matricule="{{ s.matricule }}" data-bs-toggle="modal"
+                                                data-bs-target="#modalAvancementEfa4"><i
+                                                class="bi bi-graph-up-arrow me-1"></i> Avancement
+                                        </button>
+
                                         <a href=""
-                                           class="btn btn-sm btn-outline-primary btn-action" target="_blank">Avancement</a>
+                                           class="btn btn-sm btn-outline-info btn-action" target="_blank">Corps</a>
+                                        <a href=""
+                                           class="btn btn-sm btn-outline-dark btn-action" target="_blank">Historique</a>
+                                    {% elseif triage == 'EFA' %}
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-primary btn-action btn-avancement-efa"
+                                                data-matricule="{{ s.matricule }}" data-bs-toggle="modal"
+                                                data-bs-target="#modalAvancementEfa"><i
+                                                class="bi bi-graph-up-arrow me-1"></i> Avancement
+                                        </button>
                                         <a href=""
                                            class="btn btn-sm btn-outline-info btn-action" target="_blank">Corps</a>
                                         <a href=""
@@ -360,7 +395,8 @@
 
                                     {% elseif triage == 'ELD' %}
                                         <a href=""
-                                           class="btn btn-sm btn-outline-primary btn-action" target="_blank">Avancement</a>
+                                           class="btn btn-sm btn-outline-primary btn-action"
+                                           target="_blank">Avancement</a>
                                         <a href=""
                                            class="btn btn-sm btn-outline-info btn-action" target="_blank">Corps</a>
                                         <a href=""
@@ -368,7 +404,8 @@
 
                                     {% else %}
                                         <a href=""
-                                           class="btn btn-sm btn-outline-primary btn-action" target="_blank">Avancement</a>
+                                           class="btn btn-sm btn-outline-primary btn-action"
+                                           target="_blank">Avancement</a>
                                     {% endif %}
                                 </td>
                             </tr>
@@ -380,23 +417,57 @@
         </div>
     </div>
     {# ===================== MODAL AVANCEMENT FONCTIONNAIRE ===================== #}
-    <div class="modal fade" id="modalAvancementFonc" tabindex="-1" aria-labelledby="modalAvancementFoncLabel" aria-hidden="true">
+    <div class="modal fade" id="modalAvancementFonc" tabindex="-1" aria-labelledby="modalAvancementFoncLabel"
+         aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
 
                 {# Header #}
-                <div class="modal-header text-white" style="background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #1d4ed8 100%);">
+                <div class="modal-header text-white"
+                     style="background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #1d4ed8 100%);">
                     <div>
                         <h5 class="modal-title fw-bold mb-0" id="modalAvancementFoncLabel">
                             <i class="bi bi-graph-up-arrow me-2"></i> Avancement Grade / Indice
                         </h5>
                         <small class="opacity-75">Fonctionnaire</small>
                     </div>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Fermer"></button>
                 </div>
 
                 {# Body (chargé en AJAX) #}
                 <div class="modal-body p-0" id="modalAvancementFoncBody">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <p class="mt-3 text-muted">Chargement...</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    {# ===================== MODAL AVANCEMENT EFA4 ===================== #}
+    <div class="modal fade" id="modalAvancementEfa4" tabindex="-1" aria-labelledby="modalAvancementEfa4Label"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
+
+                {# Header #}
+                <div class="modal-header text-white"
+                     style="background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #1d4ed8 100%);">
+                    <div>
+                        <h5 class="modal-title fw-bold mb-0" id="modalAvancementEfa4Label">
+                            <i class="bi bi-graph-up-arrow me-2"></i> Avancement Grade / Indice
+                        </h5>
+                        <small class="opacity-75">EFA 4</small>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Fermer"></button>
+                </div>
+
+                {# Body (chargé en AJAX) #}
+                <div class="modal-body p-0" id="modalAvancementEfa4Body">
                     <div class="text-center py-5">
                         <div class="spinner-border text-primary" role="status"></div>
                         <p class="mt-3 text-muted">Chargement...</p>
@@ -425,6 +496,25 @@
             </div>
         </div>
     </div>
+    {# Modal Avancement EFA ≤ 3 #}
+    <div class="modal fade" id="modalAvancementEfa" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9);color:white;">
+                    <h5 class="modal-title">
+                        <i class="bi bi-graph-up-arrow me-2"></i> Avancement EFA (≤ 3)
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0" id="modalAvancementEfaBody">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <p class="mt-3 text-muted">Chargement...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block javascripts %}
@@ -432,50 +522,135 @@
         document.getElementById('searchAdm')?.focus();
 
 
-            document.addEventListener('DOMContentLoaded', function () {
-            const modalEl   = document.getElementById('modalAvancementFonc');
+        document.addEventListener('DOMContentLoaded', function () {
+            const modalEl = document.getElementById('modalAvancementFonc');
             const modalBody = document.getElementById('modalAvancementFoncBody');
+            const modalElEfa3 = document.getElementById('modalAvancementEfa');
+            const modalBodyEfa3 = document.getElementById('modalAvancementEfaBody');
+            const modalElEfa4 = document.getElementById('modalAvancementEfa4');
+            const modalBodyEfa4 = document.getElementById('modalAvancementEfa4Body');
 
             document.querySelectorAll('.btn-avancement-fonc').forEach(btn => {
-            btn.addEventListener('click', function () {
-            const matricule = this.dataset.matricule;
+                btn.addEventListener('click', function () {
+                    const matricule = this.dataset.matricule;
 
-            modalBody.innerHTML = `
+                    modalBody.innerHTML = `
                 <div class="text-center py-5">
                     <div class="spinner-border text-primary" role="status"></div>
                     <p class="mt-3 text-muted">Chargement de l'agent ${matricule}...</p>
                 </div>
             `;
 
-            // Utilise l’URL générée par Symfony (plus sûr)
-            fetch(`{{ path('avancement_fonc_modal', {matricule: '__MAT__'}) }}`.replace('__MAT__', matricule))
-            .then(response => {
-            if (!response.ok) throw new Error('Erreur');
-            return response.text();
-        })
-            .then(html => {
-            modalBody.innerHTML = html;
-        })
-            .catch(() => {
-            modalBody.innerHTML = `
+                    // Utilise l’URL générée par Symfony (plus sûr)
+                    fetch(`{{ path('avancement_fonc_modal', {matricule: '__MAT__'}) }}`.replace('__MAT__', matricule))
+                        .then(response => {
+                            if (!response.ok) throw new Error('Erreur');
+                            return response.text();
+                        })
+                        .then(html => {
+                            modalBody.innerHTML = html;
+                        })
+                        .catch(() => {
+                            modalBody.innerHTML = `
                         <div class="alert alert-danger m-4">
                             <i class="bi bi-exclamation-triangle me-2"></i>
                             Impossible de charger les informations de l'agent.
                         </div>
                     `;
-        });
-        });
-        });
+                        });
+                });
+            });
+            //================================EFA4=========================================//
+            document.querySelectorAll('.btn-avancement-efa4').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const matricule = this.dataset.matricule;
 
+                    modalBodyEfa4.innerHTML = `
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-3 text-muted">Chargement de l'agent ${matricule}...</p>
+                </div>
+            `;
+
+                    // Utilise l’URL générée par Symfony (plus sûr)
+                    fetch(`{{ path('avancement_efa4_modal', {matricule: '__MAT__'}) }}`.replace('__MAT__', matricule))
+                        .then(response => {
+                            if (!response.ok) throw new Error('Erreur');
+                            return response.text();
+                        })
+                        .then(html => {
+                            modalBodyEfa4.innerHTML = html;
+                        })
+                        .catch(() => {
+                            modalBodyEfa4.innerHTML = `
+                        <div class="alert alert-danger m-4">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            Impossible de charger les informations de l'agent.
+                        </div>
+                    `;
+                        });
+                });
+            });
+            //================================EFA3========================================//
+            document.querySelectorAll('.btn-avancement-efa').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const matricule = this.dataset.matricule;
+
+                    modalBodyEfa3.innerHTML = `
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-3 text-muted">Chargement de l'agent ${matricule}...</p>
+                </div>
+            `;
+
+                    // Utilise l’URL générée par Symfony (plus sûr)
+                    fetch(`{{ path('avancement_efa_modal', {matricule: '__MAT__'}) }}`.replace('__MAT__', matricule))
+                        .then(response => {
+                            if (!response.ok) throw new Error('Erreur');
+                            return response.text();
+                        })
+                        .then(html => {
+                            modalBodyEfa3.innerHTML = html;
+                        })
+                        .catch(() => {
+                            modalBodyEfa3.innerHTML = `
+                        <div class="alert alert-danger m-4">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            Impossible de charger les informations de l'agent.
+                        </div>
+                    `;
+                        });
+                });
+            });
+            //================================FONC========================================//
             modalEl.addEventListener('hidden.bs.modal', function () {
-            modalBody.innerHTML = `
+                modalBody.innerHTML = `
             <div class="text-center py-5">
                 <div class="spinner-border text-primary" role="status"></div>
                 <p class="mt-3 text-muted">Chargement...</p>
             </div>
         `;
+        }); //================================EFA4========================================//
+            modalElEfa4.addEventListener('hidden.bs.modal', function () {
+                modalBody.innerHTML = `
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-3 text-muted">Chargement...</p>
+            </div>
+        `;
+            });
+            //================================EFA3========================================//
+            modalElEfa3.addEventListener('hidden.bs.modal', function () {
+                modalBody.innerHTML = `
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-3 text-muted">Chargement...</p>
+            </div>
+        `;
+            });
+
         });
-        });
+
         // ===== AVANCEMENT CORPS =====
         document.querySelectorAll('.btn-avancement-corps').forEach(btn => {
             btn.addEventListener('click', function () {
@@ -511,6 +686,48 @@
         // Reset du modal à la fermeture
         document.getElementById('modalAvancementCorps')?.addEventListener('hidden.bs.modal', function () {
             document.getElementById('modalAvancementCorpsBody').innerHTML = `
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-3 text-muted">Chargement...</p>
+        </div>
+    `;
+        });
+
+
+        // ===== AVANCEMENT EFA ≤ 3 =====
+        document.querySelectorAll('.btn-avancement-efa').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const matricule = this.dataset.matricule;
+                const modalBody = document.getElementById('modalAvancementEfaBody');
+
+                modalBody.innerHTML = `
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-3 text-muted">Chargement de l'agent ${matricule}...</p>
+            </div>
+        `;
+
+                fetch(`{{ path('avancement_efa_modal', {matricule: '__MAT__'}) }}`.replace('__MAT__', matricule))
+                    .then(response => {
+                        if (!response.ok) throw new Error('Erreur');
+                        return response.text();
+                    })
+                    .then(html => {
+                        modalBody.innerHTML = html;
+                    })
+                    .catch(() => {
+                        modalBody.innerHTML = `
+                    <div class="alert alert-danger m-4">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        Impossible de charger les informations de l'agent.
+                    </div>
+                `;
+                    });
+            });
+        });
+
+        document.getElementById('modalAvancementEfa')?.addEventListener('hidden.bs.modal', function () {
+            document.getElementById('modalAvancementEfaBody').innerHTML = `
         <div class="text-center py-5">
             <div class="spinner-border text-primary" role="status"></div>
             <p class="mt-3 text-muted">Chargement...</p>

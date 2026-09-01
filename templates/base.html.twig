@@ -323,7 +323,7 @@
             <div class="sidebar-section">
                 <div class="sidebar-title">Navigation</div>
 
-                <a href="#" class="nav-item">
+                <a href="{{ path('tableau_borde') }}"  class="nav-item {{ app.request.attributes.get('_route') == 'tableau_borde' ? 'active' : '' }}">
                     <i class="bi bi-speedometer2"></i>
                     <span>Tableau de bord</span>
                 </a>
@@ -332,24 +332,30 @@
             <div class="sidebar-section">
                 <div class="sidebar-title">Fiche Individuelle</div>
 
-                <a href="{{ path('agents_ajout') }}" class="nav-item">
+                <a href="{{ path('agents_ajout') }}"  class="nav-item {{ app.request.attributes.get('_route') == 'agents_ajout' ? 'active' : '' }}">
                     <i class="bi bi-person-vcard"></i>
                     <span>État civil</span>
                 </a>
 
-                <a href="{{ path('agents_index') }}" class="nav-item ">
+                <a href="{{ path('agents_index') }}"  class="nav-item {{ app.request.attributes.get('_route') == 'agents_index' ? 'active' : '' }}">
                     <i class="bi-card-checklist"></i>
                     <span>Liste agents</span>
                 </a>
 
-                <a href="{{ path('situation_administrative_index') }}" class="nav-item active">
+                <a href="{{ path('situation_administrative_index') }}" class="nav-item {{ app.request.attributes.get('_route') == 'situation_administrative_index' ? 'active' : '' }}">
                     <i class="bi bi-briefcase"></i>
-                    <span>Situation Administrative</span>
+                    <span>Administrative</span>
                 </a>
 
-                <a href="{{ path('avancement_index') }}" class="nav-item">
+                <a href="{{ path('avancement_index') }}" class="nav-item {{ app.request.attributes.get('_route') == 'avancement_index' ? 'active' : '' }}">
                     <i class="bi bi-people-fill"></i>
                     <span>Avancement</span>
+                </a>
+
+                <a href="{{ path('conge_index') }}"
+                   class="nav-item {{ app.request.attributes.get('_route') == 'conge_index' ? 'active' : '' }}">
+                    <i class="bi bi-calendar-check"></i>
+                    <span>Demande congé</span>
                 </a>
 
                 <a href="#" class="nav-item">
