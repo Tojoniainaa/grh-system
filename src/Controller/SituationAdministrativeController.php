@@ -17,6 +17,7 @@ use App\Repository\CorpsheeRepository;
 use App\Repository\EchelleRepository;
 use App\Repository\GradefonRepository;
 use App\Repository\IndiceRepository;
+use App\Repository\ServicesRepository;
 use App\Repository\SituationAdmRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -42,6 +43,7 @@ class SituationAdministrativeController extends AbstractController
         IndiceRepository $indiceRepository,
         EchelleRepository $echelleRepository,
         BudgetRepository $budgetRepository,
+        ServicesRepository $servicesRepository,
         SituationAdmRepository $situationRepo,
         EntityManagerInterface $em,
     ): Response {
@@ -57,6 +59,7 @@ class SituationAdministrativeController extends AbstractController
         $corpsHee  = [];
         $grades    = $gradeFonRepository->findBy([], ['libelleGrade' => 'ASC']); // solution temporaire
         $echelles  = [];
+        $service = null;
 
         // Chargement conditionnel
         if ($status === 'FONC') {
@@ -71,7 +74,9 @@ class SituationAdministrativeController extends AbstractController
         } elseif ($status === 'HEE') {
             $corpsHee = $corpsHeeRepository->findBy([], ['libelleCorps' => 'ASC']);
         }
+        $directionsGenerales = $servicesRepository->findDirectionsGenerales();
 
+        $services = $servicesRepository->findAll();
         // Récupération des indices (logique ancienne)
         $indices = $indiceRepository->listeIndice($request->request->all());
         $budgets = $budgetRepository->listeBudget($request->request->all());
@@ -93,6 +98,16 @@ class SituationAdministrativeController extends AbstractController
             $status = $data['StatusAgent'] ?? '';
             $situation = new SituationAdm();
 
+            if (!empty($data['service_id'])) {
+                $service = $servicesRepository->find((int) $data['service_id']);
+            }
+
+            if (!$service) {
+                $this->addFlash('error', 'Veuillez sélectionner un service.');
+                return $this->redirectToRoute('situation_administrative_index');
+            }
+
+            $situation->setService($service);
             // ===== Champs communs =====
             $situation->setMatricule($data['Matricule']);
             $situation->setStatu($status);
@@ -182,6 +197,8 @@ class SituationAdministrativeController extends AbstractController
             'echelles'   => $echelles,
             'indices'    => $indices,
             'budgets' => $budgets,
+            'directionsGenerales' => $directionsGenerales,
+            'services' => $services,
         ]);
     }
 

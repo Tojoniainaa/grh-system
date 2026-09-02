@@ -24,6 +24,10 @@
                 <span class="me-3"><strong>Indice :</strong> {{ situation.indice ?? '—' }}</span>
                 <span><strong>Grade :</strong> {{ situation.codeGrade ?? '—' }}</span>
             </div>
+            <div class="text-muted small mt-1">
+                <span class="me-3"><strong>Direction générale :</strong>{{ situation.service.directionGenerale ?? '—' }}</span>
+                <span class="me-3"><strong>Service :</strong>{{ situation.service.services ?? '—' }}</span>
+            </div>
         </div>
     </div>
 </div>

@@ -86,6 +86,9 @@ class SituationAdm
 
     #[ORM\Column(nullable: true)]
     private ?int $majoration = null;
+    #[ORM\ManyToOne(targetEntity: Services::class)]
+    #[ORM\JoinColumn(name: 'service_id', referencedColumnName: 'Id', nullable: true)]
+    private ?Services $service = null;
 
 
     // ==================== GETTERS & SETTERS ====================
@@ -360,5 +363,15 @@ class SituationAdm
         $this->majoration = $majoration;
         return $this;
     }
-    // Vous pouvez générer les getters/setters restants avec Symfony Maker ou manuellement
+    public function getService(): ?Services
+    {
+        return $this->service;
+    }
+
+    public function setService(?Services $service): static
+    {
+        $this->service = $service;
+
+        return $this;
+    }
 }

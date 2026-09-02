@@ -7,6 +7,7 @@ use App\Form\AgentsType;
 use App\Repository\AgentsRepository;
 use App\Repository\Indiceefa4Repository;
 use App\Repository\IndiceefaRepository;
+use App\Repository\ServicesRepository;
 use App\Repository\SituationAdmRepository;
 use App\Repository\StatusfonRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -39,7 +40,8 @@ class AgentsController extends AbstractController
 
     #[Route('/tableau_borde', name: 'tableau_borde', methods: ['GET'])]
     public function tableauBord(
-        SituationAdmRepository $situationAdmRepository
+        SituationAdmRepository $situationAdmRepository,
+        ServicesRepository $servicesRepository
     ): Response {
 
         $totalPersonnes = $situationAdmRepository->countDistinctMatricules();
@@ -48,11 +50,17 @@ class AgentsController extends AbstractController
 
         $parCategorie = $situationAdmRepository->countByCategorie();
 
+        $totalDirections = $servicesRepository->countDirections();
+
+        $totalServices = $servicesRepository->countServices();
+
         return $this->render('home/index.html.twig', [
-            'totalPersonnes' => $totalPersonnes,
-            'parStatus'      => $parStatus,
-            'parCategorie'   => $parCategorie,
-            'anneeExercice'  => (int) date('Y'),
+            'totalPersonnes'  => $totalPersonnes,
+            'parStatus'       => $parStatus,
+            'parCategorie'    => $parCategorie,
+            'totalDirections' => $totalDirections,
+            'totalServices'   => $totalServices,
+            'anneeExercice'   => (int) date('Y'),
         ]);
     }
 
