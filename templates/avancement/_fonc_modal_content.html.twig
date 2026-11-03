@@ -33,7 +33,7 @@
 </div>
 
 {# ===== FORMULAIRE ===== #}
-<form method="post" class="p-4">
+<form method="post" action="{{ path('avancement_fonc_save', {'matricule': agent.matricule}) }}" class="p-4"  id="formAvancementFonc">
     <div class="row g-3">
 
         {# Nouveau Grade #}
@@ -52,13 +52,16 @@
 
         {# Nouvel Indice #}
         <div class="col-md-6">
-            <label class="form-label fw-medium">Nouvel Indice <span class="text-danger">*</span></label>
+            <label class="form-label fw-medium">
+                Nouvel Indice <span class="text-danger">*</span>
+            </label>
             <select name="indice" class="form-select" required>
                 <option value="">— Sélectionner un indice —</option>
+
                 {% for indice in indices %}
-                    <option value="{{ indice.indice }}"
-                        {{ situation.indice == indice.indice ? 'selected' : '' }}>
-                        {{ indice.indice }}
+                    <option value="{{ indice }}"
+                        {{ situation.indice == indice ? 'selected' : '' }}>
+                        {{ indice }}
                     </option>
                 {% endfor %}
             </select>

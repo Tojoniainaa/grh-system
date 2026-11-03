@@ -80,6 +80,7 @@
         "codeception/module-asserts": "^3.3",
         "codeception/module-phpbrowser": "^4.0",
         "codeception/module-symfony": "^3.10",
-        "symfony/maker-bundle": "^1.67"
+        "symfony/maker-bundle": "^1.67",
+        "symfony/web-profiler-bundle": "7.4.*"
     }
 }

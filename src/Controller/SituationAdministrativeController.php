@@ -19,6 +19,7 @@ use App\Repository\GradefonRepository;
 use App\Repository\IndiceRepository;
 use App\Repository\ServicesRepository;
 use App\Repository\SituationAdmRepository;
+use App\Repository\StatusfonRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -289,7 +290,8 @@ class SituationAdministrativeController extends AbstractController
         Request $request,
         EntityManagerInterface $em,
         AgentsRepository $agentRepo,
-        SituationAdmRepository $situationRepo
+        SituationAdmRepository $situationRepo,
+        StatusfonRepository $statusFonRepository,   // ← ajoute cette injection
     ): Response {
         $triage    = $request->request->get('triage') ?? $request->query->get('triage', '');
         $searchAdm = trim($request->request->get('searchAdm') ?? $request->query->get('searchAdm', ''));
@@ -343,12 +345,18 @@ class SituationAdministrativeController extends AbstractController
             return new Response('<div class="alert alert-danger m-4">Situation administrative introuvable</div>', 404);
         }
 
-        // Grades
+        // Récupérer les grades
         $grades = $em->getRepository(GradeFon::class)->findAll();
-
-        // Indices → change Statusfon par le vrai nom de ton entité Indice
-        // Exemple : Indice::class ou Statusfon si c’est vraiment cette table
-        $indices = $em->getRepository(Statusfon::class)->findAll();
+        // Récupérer les indices du corps de l'agent
+        $indices = $em->getRepository(Statusfon::class)
+            ->createQueryBuilder('s')
+            ->select('DISTINCT s.indice')
+            ->where('s.codeCorps = :corps')
+            ->andWhere('s.indice IS NOT NULL')
+            ->setParameter('corps', $situation->getCodeCorps())
+            ->orderBy('s.indice', 'ASC')
+            ->getQuery()
+            ->getSingleColumnResult();
 
         return $this->render('avancement/_fonc_modal_content.html.twig', [
             'agent'     => $agent,
@@ -449,4 +457,64 @@ class SituationAdministrativeController extends AbstractController
             'echelles'   => $echelles,
         ]);
     }
+
+    #[Route('/avancement/fonc/{matricule}', name: 'avancement_fonc_save', methods: ['POST'])]
+    public function avancementFoncSave(
+        string $matricule,
+        Request $request,
+        AgentsRepository $agentRepo,
+        SituationAdmRepository $situationRepo,
+        StatusfonRepository $statusFonRepository,
+        EntityManagerInterface $em,
+    ): Response {
+
+        // 1. Rechercher l'agent par son matricule
+        $agent = $agentRepo->findOneBy(['matricule' => $matricule]);
+        if (!$agent) {
+            $this->addFlash('error', 'Agent introuvable.');
+            return $this->redirectToRoute('situation_administrative_index');
+        }
+        // 2. Rechercher sa situation administrative
+        $situation = $situationRepo->findOneBy(['matricule' => $matricule]);
+        if (!$situation) {
+            $this->addFlash('error', 'Situation administrative introuvable.');
+            return $this->redirectToRoute('situation_administrative_index');
+        }
+        // 3. Récupérer les données du formulaire
+        $codeGrade = $request->request->get('code_grade');
+        $indice = $request->request->get('indice');
+        $dateTexte = $request->request->get('date_texte');
+        $refNotification = $request->request->get('ref_notification');
+        $dateEffet = $request->request->get('date_effet');
+
+        // 4. Vérifier les champs obligatoires
+        if (!$codeGrade || !$indice || !$dateEffet) {
+            $this->addFlash('error', 'Veuillez remplir tous les champs obligatoires.');
+            return $this->redirectToRoute('situation_administrative_index');
+        }
+
+        // 5. Vérifier la correspondance Corps + Grade + Indice
+        $statusFon = $statusFonRepository->findOneBy(['codeCorps' => $situation->getCodeCorps(), 'grade' => $codeGrade, 'indice' => (int) $indice,]);
+
+        if (!$statusFon) {
+            $this->addFlash('error', 'Le grade et l’indice sélectionnés ne sont pas valides.');
+
+            return $this->redirectToRoute('situation_administrative_index');
+        }
+
+        // 6. Modifier la situation administrative existante
+        $situation->setCodeGrade($codeGrade);
+        $situation->setIndice((int) $indice);
+        $situation->setDateTexte(
+            $dateTexte ? new \DateTime($dateTexte) : null
+        );
+        $situation->setRefNotification($refNotification);
+        $situation->setDateEffet(
+            new \DateTime($dateEffet)
+        );
+        $em->flush();
+        $this->addFlash('success', 'Avancement enregistré avec succès.');
+        return $this->redirectToRoute('situation_administrative_index');
+    }
+
 }
